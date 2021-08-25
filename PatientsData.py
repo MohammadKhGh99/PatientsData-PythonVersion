@@ -1,4 +1,5 @@
 # started at 22.08.2021 at 17:17
+import csv
 import os
 
 
@@ -64,12 +65,23 @@ class Patient:
 
 
 folder_name = "المعالجة"
+excel_file = "مرضى.xls"
+NAME = "Name"
+PID = "id"
+AGE = "Age"
+COME = "Come_Cause"
+ABSENT = "Absent_Cause"
+FINISH = "Finish_Cause"
+DATES = "Dates"
+SYMPTOMS = "Symptoms"
 
 
 class Patients:
     def __init__(self, patients: list):
         if not os.path.exists(folder_name):
             os.mkdir(folder_name)
+        if not os.path.exists(excel_file):
+            self.__excel_file = open(excel_file, 'r+')
         this_dir = os.path.abspath(os.curdir)
         this_dir = os.path.join(this_dir, folder_name)
         self.__patients = patients
@@ -86,4 +98,21 @@ class Patients:
 
     def remove_patient(self, patient: Patient):
         self.__patients.remove(patient)
+
+    def search_patient(self, name: str):
+        reader = csv.DictReader(excel_file)
+        for line in reader:
+            # name = line[NAME] == patient.get_name()
+            # pid = line[PID] == patient.get_pid()
+            # age = line[AGE] == patient.get_age()
+            # come_cause = line[COME] == patient.get_come_cause()
+            # absent_cause = line[ABSENT] == patient.get_absent_cause()
+            # finish_cause = line[FINISH] == patient.get_finish_cause()
+            # dates = line[DATES] == patient.get_dates()
+            # symptoms = line[SYMPTOMS] == patient.get_symptoms()
+            # if name and pid and age and come_cause and absent_cause and finish_cause and dates and symptoms:
+            #     return
+            if line[NAME] == name:
+                return Patient(name, line[PID], line[AGE], line[COME], line[ABSENT], line[FINISH], line[DATES], line[SYMPTOMS])
+        return None
 

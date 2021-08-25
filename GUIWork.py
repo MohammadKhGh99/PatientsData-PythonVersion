@@ -1,25 +1,32 @@
 import os
 from tkinter import *
 from tkinter.messagebox import askyesno
+from PatientsData import *
 
 
 class GUI:
     def __init__(self):
         self.__root = Tk()
-        self.__canvas = Canvas(self.__root)
+        self.__canvas = Canvas(self.__root, bd=0, highlightthickness=10, highlightcolor="black")
         self.__canvas.pack(anchor="sw", side=LEFT)
-        self.__canvas.configure(bg='grey', height=960, width=723)
+        self.__canvas.configure(bg='grey', height=684, width=720)
         self.__buttons = []
         self.__canvas_content = []
+        self.__add_texts = []
+        self.__patients = Patients([])
 
     def starting_the_window(self):
         """
-        this method starts the window of the game
+        this method starts the window of the
         :return: returns nothing
         """
         self.__root.configure(background='grey')
         self.__root.geometry("960x750")
         self.__root.title("المعالجة بالرقية الشرعية")
+        title = Label(self.__root, text="بسم الله الرحمن الرحيم", font=("Traditional Arabic", 20), bg="grey")
+        title.place(relx=0.6, rely=0.029, anchor="e")
+        # bg = Label(self.__canvas, image=PhotoImage(file="one.png"))
+        # bg.place(relx=1, rely=0.5, anchor="e")
         self.starting_buttons()
         self.__root.mainloop()
 
@@ -39,6 +46,7 @@ class GUI:
             name = name.get()
             search_entry.destroy()
             done_search.destroy()
+
             print(name)
         done_search = Button(self.__canvas, text="البحث", font=("Times", 12), command=done_func)
         done_search.place(relx=1, rely=0.1, anchor="e")
@@ -52,56 +60,50 @@ class GUI:
         # self.__canvas.delete(0, END)
         self.delete_canvas_content()
         name_label = Label(self.__canvas, text=":الإسم", font=("Times", 15), bg="grey")
-        name_label.place(relx=0.99, rely=0.05, anchor="e")
+        name_label.place(relx=0.98, rely=0.05, anchor="e")
         name_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         # name_text.tag_config(justify="right", tagName="tag-right")
         name_text.place(relx=0.85, rely=0.05, anchor="e")
-        name = name_text.get(1.0, "end")
 
         pid_label = Label(self.__canvas, text=":رقم الهوية", font=("Times", 15), bg="grey")
-        pid_label.place(relx=0.99, rely=0.15, anchor="e")
+        pid_label.place(relx=0.98, rely=0.15, anchor="e")
         pid_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         pid_text.place(relx=0.85, rely=0.15, anchor="e")
-        pid = int(pid_text.get(1.0, "end"))
 
         age_label = Label(self.__canvas, text=":العمر", font=("Times", 15), bg="grey")
-        age_label.place(relx=0.99, rely=0.25, anchor="e")
+        age_label.place(relx=0.98, rely=0.25, anchor="e")
         age_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         age_text.place(relx=0.85, rely=0.25, anchor="e")
-        age = float(age_text.get(1.0, "end"))
 
         come_label = Label(self.__canvas, text=":سبب القدوم", font=("Times", 15), bg="grey")
-        come_label.place(relx=0.99, rely=0.35, anchor="e")
+        come_label.place(relx=0.98, rely=0.35, anchor="e")
         come_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         come_text.place(relx=0.85, rely=0.35, anchor="e")
-        come_cause = come_text.get(1.0, "end")
 
         absent_label = Label(self.__canvas, text=":سبب الغياب", font=("Times", 15), bg="grey")
-        absent_label.place(relx=0.99, rely=0.45, anchor="e")
+        absent_label.place(relx=0.98, rely=0.45, anchor="e")
         absent_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         absent_text.place(relx=0.85, rely=0.45, anchor="e")
-        absent_cause = absent_text.get(1.0, "end")
 
         finish_label = Label(self.__canvas, text=":سبب الإنتهاء", font=("Times", 15), bg="grey")
-        finish_label.place(relx=0.99, rely=0.55, anchor="e")
+        finish_label.place(relx=0.98, rely=0.55, anchor="e")
         finish_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         finish_text.place(relx=0.85, rely=0.55, anchor="e")
-        finish_cause = finish_text.get(1.0, "end")
 
         dates_label = Label(self.__canvas, text=":تواريخ القدوم", font=("Times", 15), bg="grey")
-        dates_label.place(relx=0.99, rely=0.65, anchor="e")
+        dates_label.place(relx=0.98, rely=0.65, anchor="e")
         dates_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         dates_text.place(relx=0.85, rely=0.65, anchor="e")
-        dates = dates_text.get(1.0, "end").split(',')
 
         symptoms_label = Label(self.__canvas, text=":الأعراض", font=("Times", 15), bg="grey")
-        symptoms_label.place(relx=0.99, rely=0.75, anchor="e")
+        symptoms_label.place(relx=0.98, rely=0.75, anchor="e")
         symptoms_text = Text(self.__canvas, height=1, width=60, font=("Times", 15))
         symptoms_text.place(relx=0.85, rely=0.75, anchor="e")
-        symptoms = symptoms_text.get(1.0, "end")
+
+        self.__add_texts += [name_text, pid_text, age_text, come_text, absent_text, finish_text, dates_text, symptoms_text]
 
         # todo add command
-        save_button = Button(self.__canvas, text="حفظ", font=("Times", 15))
+        save_button = Button(self.__canvas, text="حفظ", font=("Times", 15), command=self.save_button_func)
         save_button.place(relx=0.8, rely=0.9, anchor="e")
 
         finish_button = Button(self.__canvas, text="الإنتهاء", font=("Times", 15), command=self.delete_canvas_content)
@@ -109,12 +111,32 @@ class GUI:
         self.__canvas_content += [name_label, name_text, pid_label, pid_text, age_label, age_text, come_label, come_text, absent_label, absent_text, finish_label, finish_text, dates_label,
                                   dates_text, symptoms_label, symptoms_text, save_button, finish_button]
 
+    def save_button_func(self):
+        name = self.__add_texts[0].get(1.0, "end-1c")
+        pid = int(self.__add_texts[1].get(1.0, "end-1c"))
+        age = float(self.__add_texts[2].get(1.0, "end-1c"))
+        come_cause = self.__add_texts[3].get(1.0, "end-1c")
+        absent_cause = self.__add_texts[4].get(1.0, "end-1c")
+        finish_cause = self.__add_texts[5].get(1.0, "end-1c")
+        dates = self.__add_texts[6].get(1.0, "end-1c").split(',')
+        symptoms = self.__add_texts[7].get(1.0, "end-1c")
+        patient = Patient(name, pid, age, come_cause, absent_cause, finish_cause, dates, symptoms)
+
+        # print(patient.get_name())
+        # print(patient.get_pid())
+        # print(patient.get_age())
+        # print(patient.get_come_cause())
+        # print(patient.get_absent_cause())
+        # print(patient.get_finish_cause())
+        # print(patient.get_dates())
+        # print(patient.get_symptoms())
+
     def remove_button_func(self):
         remove_label = Label()
         remove_text = Text()
 
     def quit_button_func(self):
-        quitting = askyesno("!الخروج", "هل أنت متأكد من الخروج؟")
+        quitting = askyesno("!المغادرة", "هل أنت متأكد من المغادرة؟")
         if quitting:
             quit()
         else:
