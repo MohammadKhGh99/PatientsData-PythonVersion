@@ -2,14 +2,20 @@ import os
 from tkinter import *
 from tkinter.messagebox import askyesno
 from PatientsData import *
+# from PIL import Image
 
 
 class GUI:
     def __init__(self):
         self.__root = Tk()
-        self.__canvas = Canvas(self.__root, bd=0, highlightthickness=10, highlightcolor="black")
-        self.__canvas.pack(anchor="sw", side=LEFT)
-        self.__canvas.configure(bg='grey', height=684, width=720)
+
+        # self.__root.attributes("-fullscreen", True)
+        self.__canvas = Canvas(self.__root, width=self.__root.winfo_screenwidth(),
+                               height=self.__root.winfo_screenheight(), bd=10, bg="white")
+        # self.__canvas.config(high)
+        # self.__canvas.place(x=100, y=100)
+        # self.__canvas.pack(anchor="sw", side=LEFT)
+        # self.__canvas.configure(bg='grey', height=684, width=720)
         self.__buttons = []
         self.__canvas_content = []
         self.__add_texts = []
@@ -20,10 +26,12 @@ class GUI:
         this method starts the window of the
         :return: returns nothing
         """
-        self.__root.configure(background='grey')
-        self.__root.geometry("960x750")
+        # self.__root.configure(background='grey')
+        width = self.__root.winfo_screenwidth()
+        height = self.__root.winfo_screenheight()
+        self.__root.geometry(f"{width}x{height}")
         self.__root.title("المعالجة بالرقية الشرعية")
-        title = Label(self.__root, text="بسم الله الرحمن الرحيم", font=("Traditional Arabic", 20), bg="grey")
+        title = Label(self.__root, text="بسم الله الرحمن الرحيم", font=("Traditional Arabic", 30))
         title.place(relx=0.6, rely=0.029, anchor="e")
         # bg = Label(self.__canvas, image=PhotoImage(file="one.png"))
         # bg.place(relx=1, rely=0.5, anchor="e")
@@ -49,10 +57,10 @@ class GUI:
 
             print(name)
         done_search = Button(self.__canvas, text="البحث", font=("Times", 12), command=done_func)
-        done_search.place(relx=1, rely=0.1, anchor="e")
+        done_search.place(x=100, y=50, anchor="e")
         # self.__canvas_content.append(done_search)
         search_entry = Entry(self.__canvas, width=48, font=("Times", 20), textvariable=name, justify="right")
-        search_entry.place(relx=0.92, rely=0.099, anchor="e")
+        search_entry.place(x=550, y=50, anchor="e")
         search_entry.bind("<Return>", done_func)
         self.__canvas_content += [done_search, search_entry]
 
@@ -157,17 +165,17 @@ class GUI:
 
     def starting_buttons(self):
         search_button = Button(self.__root, text="إبحث عن مريض", font=("Times", 20), command=self.__search_button_func)
-        search_button.place(relx=1, rely=0.1, anchor="e")
+        search_button.place(relx=1, rely=0.15, anchor="e")
         add_new_button = Button(self.__root, text="إضافة مريض جديد", font=("Times", 20), command=self.add_new_button_func)
-        add_new_button.place(relx=1, rely=0.2, anchor="e")
+        add_new_button.place(relx=1, rely=0.25, anchor="e")
         remove_button = Button(self.__root, text="حذف مريض", font=("Times", 20), command=self.remove_button_func)
-        remove_button.place(relx=1, rely=0.3, anchor="e")
+        remove_button.place(relx=1, rely=0.35, anchor="e")
         update_button = Button(self.__root, text="تعديل معلومات مريض", font=("Times", 20), command=self.update_button_func)
-        update_button.place(relx=1, rely=0.4, anchor="e")
+        update_button.place(relx=1, rely=0.45, anchor="e")
         # how_to_use_button = Button(self.__root, text="كيفية الإستخدام؟", font=("Times", 20), command=self.how_to_use_func)
         # how_to_use_button.place(relx=1, rely=0.4, anchor="e")
         quit_button = Button(self.__root, text="الخروج", font=("Times", 20), command=self.quit_button_func)
-        quit_button.place(relx=1, rely=0.5, anchor="e")
+        quit_button.place(relx=1, rely=0.55, anchor="e")
 
 
 if __name__ == "__main__":
