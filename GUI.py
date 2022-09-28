@@ -12,7 +12,7 @@ import tkinter.ttk as ttk
 import time
 import csv
 from tkinter.scrolledtext import ScrolledText
-from tkinter.constants import *
+from tkinter import messagebox
 
 
 # class Patient:
@@ -50,6 +50,9 @@ class GUI:
         self.__patients = p.Patients()
         # self.__frame = Frame(self.__canvas, width=500, height=500, background="black")
         # self.__frame.place(x=200, y=100)
+        self.widgets = []
+        self.labels = []
+        self.options_values = []
 
     def starting_the_window(self):
         """
@@ -310,54 +313,70 @@ class GUI:
             nonlocal id_flag, age_flag, id_err_label, age_err_label, child_err_label, phone_err_label, child_flag, phone_flag
 
             # check for id number
-            if len(id_number) != 9 and len(id_number) != 0 and not id_number.isnumeric():
+            if (len(id_number) != 9 and len(id_number) != 0) or (len(id_number) != 0 and not id_number.isnumeric()):
                 id_flag = True
-                id_err_label = Label(self.__canvas, text="!رقم الهوية من 9 أرقام", font=("Times", 15), bg="red")
-                id_err_label.place(x=ID_WDG_X + 20, y=ID_Y - 35, anchor="e")
-                return
-            elif id_flag:
-                id_flag = False
                 if id_err_label is not None:
                     id_err_label.destroy()
+
+                id_err_label = Label(self.__canvas, text="!رقم الهوية من 9 أرقام", font=("Times", 15), bg="red")
+                id_err_label.place(x=ID_WDG_X + 20, y=ID_Y - 35, anchor="e")
+            elif id_err_label is not None:
+                id_flag = False
+                # if id_err_label is not None:
+                id_err_label.destroy()
 
             # check for age
             if len(age) != 0 and not age.isnumeric():
                 age_flag = True
-                age_err_label = Label(self.__canvas, text="!العمر من أرقام فقط", font=("Times", 15), bg="red")
-                age_err_label.place(x=AGE_WDG_X + 40, y=AGE_Y - 35, anchor="e")
-                return
-            elif age_flag:
-                age_flag = False
                 if age_err_label is not None:
                     age_err_label.destroy()
+
+                age_err_label = Label(self.__canvas, text="!العمر من أرقام فقط", font=("Times", 15), bg="red")
+                age_err_label.place(x=AGE_WDG_X + 40, y=AGE_Y - 35, anchor="e")
+            elif age_err_label is not None:
+                age_flag = False
+                age_err_label.destroy()
 
             # check for children
             if len(children) != 0 and not children.isnumeric():
                 child_flag = True
-                child_err_label = Label(self.__canvas, text="!عدد الأولاد من أرقام فقط", font=("Times", 15), bg="red")
-                child_err_label.place(x=CHILDREN_LBL_X + 40, y=CHILDREN_Y - 35, anchor="e")
-                return
-            elif child_flag:
-                child_flag = False
                 if child_err_label is not None:
                     child_err_label.destroy()
+
+                child_err_label = Label(self.__canvas, text="!عدد الأولاد من أرقام فقط", font=("Times", 15), bg="red")
+                child_err_label.place(x=CHILDREN_LBL_X + 40, y=CHILDREN_Y - 35, anchor="e")
+            elif child_err_label is not None:
+                child_flag = False
+                child_err_label.destroy()
 
             # check for phone number
             if len(phone) != 0 and not phone.isnumeric():
                 phone_flag = True
-                phone_err_label = Label(self.__canvas, text="!رقم الهاتف من أرقام فقط", font=("Times", 15),
-                                        bg="red")
-                phone_err_label.place(x=PHONE_LBL_X + 40, y=PHONE_Y - 35, anchor="e")
-                return
-            elif phone_flag:
-                phone_flag = False
                 if phone_err_label is not None:
                     phone_err_label.destroy()
+
+                phone_err_label = Label(self.__canvas, text="!رقم الهاتف من أرقام فقط", font=("Times", 15), bg="red")
+                phone_err_label.place(x=PHONE_LBL_X + 40, y=PHONE_Y - 35, anchor="e")
+            elif phone_err_label is not None:
+                phone_flag = False
+                phone_err_label.destroy()
 
             if not phone_flag and not id_flag and not child_flag and not age_flag:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
+
                 self.__patients.add_patient(patient)
+                for widget in self.widgets:
+                    if type(widget) is Entry:
+                        widget.delete(0, END)
+                    elif type(widget) is ScrolledText:
+                        widget.delete('1.0', END)
+                for value in self.options_values:
+                    value.set('-')
+                # gender_options.selection_clear()
+                messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
+            else:
+                messagebox.showerror("! فشل الحفظ", "! فشل الحفظ")
 
         save_button = Button(self.__canvas, text="حفظ", font=("Times", 15), command=save_button_func)
         save_button.place(x=75, y=700, anchor="w")
@@ -365,15 +384,18 @@ class GUI:
         # todo: saving
         finish_button = Button(self.__canvas, text="الإنتهاء", font=("Times", 15), command=self.delete_canvas_content)
         finish_button.place(x=5, y=700, anchor="w")
-        self.__canvas_content += [name_label, gender_options, pid_label, pid_entry,  # birth_label, year_options,
-                                  # birth_day_options, birth_month_options, birth_year_options,
-                                  description_label, description_text, save_button, finish_button, gender_options,
-                                  gender_label, name_entry, age_label, age_entry, social_situation_label,
-                                  social_situation_options, diagnosis_text, diagnosis_label, health_label,
-                                  health_entry, therapy_text, therapy_label, children_entry, children_label,
-                                  prayer_label, prayer_options, work_entry, work_label, companion_entry,
-                                  companion_label, city_entry, city_label, phone_label, phone_entry, id_err_label,
-                                  age_err_label]
+        self.__canvas_content += [name_label, gender_options, pid_label, pid_entry, description_label, description_text,
+                                  save_button, finish_button, gender_options, gender_label, name_entry, age_label,
+                                  age_entry, social_situation_label, social_situation_options, diagnosis_text,
+                                  diagnosis_label, health_label, health_entry, therapy_text, therapy_label,
+                                  children_entry, children_label, prayer_label, prayer_options, work_entry, work_label,
+                                  companion_entry, companion_label, city_entry, city_label, phone_label, phone_entry,
+                                  id_err_label, age_err_label]
+
+        self.widgets += [name_entry, pid_entry, age_entry, children_entry, health_entry, work_entry, companion_entry,
+                         city_entry, phone_entry, description_text, diagnosis_text, therapy_text]
+
+        self.options_values += [gender_value, social_value, prayer_value]
 
     def delete_patient_button_func(self):
         pass
@@ -381,42 +403,16 @@ class GUI:
     def update_patient_button_func(self):
         pass
 
-    # def save_button_func(self):
-    #     name = self.__add_texts[0].get(1.0, "end-1c")
-    #     pid = int(self.__add_texts[1].get(1.0, "end-1c"))
-    #     age = float(self.__add_texts[2].get(1.0, "end-1c"))
-    #     come_cause = self.__add_texts[3].get(1.0, "end-1c")
-    #     absent_cause = self.__add_texts[4].get(1.0, "end-1c")
-    #     finish_cause = self.__add_texts[5].get(1.0, "end-1c")
-    #     dates = self.__add_texts[6].get(1.0, "end-1c").split(',')
-    #     symptoms = self.__add_texts[7].get(1.0, "end-1c")
-    #     patient = p.Patient(name, pid, age, come_cause, absent_cause, finish_cause, dates, symptoms)
-    #
-    #     # print(patient.get_name())
-    #     # print(patient.get_pid())
-    #     # print(patient.get_age())
-    #     # print(patient.get_come_cause())
-    #     # print(patient.get_absent_cause())
-    #     # print(patient.get_finish_cause())
-    #     # print(patient.get_dates())
-    #     # print(patient.get_symptoms())
-
     def quit_button_func(self):
         quitting = askyesno("!المغادرة", "هل أنت متأكد من المغادرة؟")
         if quitting:
-            quit()
+            # self.__patients.csv_file.close()
+            self.__root.destroy()
+            # return 0
+            # exit(0)
+            # quit()
         else:
             pass
-
-    # def how_to_use_func(self):
-    #     pass
-    #
-    # def destroy_how(self):
-    #     pass
-
-    # def destroy_buttons(self):
-    #     for button in self.__buttons:
-    #         button.destroy()
 
 
 if __name__ == "__main__":
