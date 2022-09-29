@@ -23,8 +23,6 @@ class Patient:
         self.description = description
         self.diagnosis = diagnosis
         self.therapy = therapy
-        # self.come_dates = come_dates
-        # self.explanation = explanation
 
 
 folder_name = "المعالجة"
@@ -37,19 +35,11 @@ class Patients:
 
         if not os.path.exists(folder_name):
             os.mkdir(folder_name)
-        # flag = False
-        # if not os.path.exists(os.path.join(this_dir, csv_file)):
-        #     flag = True
-        #     self.csv_file = open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig")
-        # else:
-        #     self.csv_file = open(os.path.join(this_dir, csv_file), 'w+', encoding="utf-8-sig")
 
         self.patients = list()
-        # self.csv_writer = csv.writer(self.csv_file)
-        # self.csv_reader = csv.reader(self.csv_file)
-        print(os.path.join(this_dir, csv_file))
+
         if not os.path.exists(os.path.join(this_dir, csv_file)):
-            with open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig", newline='') as f:
+            with open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig", newline='\n') as f:
                 writer = csv.writer(f)
                 first_row = [NAME[1:], ID[1:], GENDER[1:], SOCIAL_SIT[1:], AGE[1:], CHILDREN[1:],
                              PRAYER[1:], HEALTH[1:], WORK[1:], COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:],
@@ -57,7 +47,7 @@ class Patients:
                 writer.writerow(first_row)
 
     def add_patient(self, patient: Patient):
-        with open(os.path.join(this_dir, csv_file), 'a', encoding="utf-8-sig", newline='') as f:
+        with open(os.path.join(this_dir, csv_file), 'a', encoding="utf-8-sig", newline='\n') as f:
             writer = csv.writer(f)
             self.patients.append(patient)
             new_row = [patient.name, patient.id_number, patient.gender, patient.social, patient.age, patient.children,
@@ -69,10 +59,22 @@ class Patients:
     def remove_patient(self, patient: Patient):
         self.patients.remove(patient)
 
-    def search_patient(self, name: str):
-        # reader = csv.DictReader(self.csv_file)
-        # for line in reader:
-        #     if line[NAME] == name:
-        #         return Patient(name, line[PID], line[AGE], line[COME], line[ABSENT], line[FINISH], line[DATES],
-        #                        line[SYMPTOMS])
-        return None
+    def search_patient(self, id_or_name: str = NAME_SEARCH, name: str = None, id_number: str = None):
+        with open(os.path.join(this_dir, csv_file), 'r', encoding="utf-8-sig", newline='\n') as f:
+            reader = csv.DictReader(f, ALL_DATA)
+            to_return = []
+            for row in reader:
+                if row[NAME[1:]] == NAME[1:]:
+                    continue
+                if id_or_name == NAME_SEARCH:
+                    if name is None:
+                        return -1, NAME_SEARCH_ERR
+                    elif row[NAME[1:]].startswith(name):
+                        print(row[NAME[1:]])
+                        to_return.append(row)
+                elif id_or_name == ID_SEARCH:
+                    if id_number is None:
+                        return -1, ID_SEARCH_ERR
+                    elif row[ID[1:]].startswith(id_number):
+                        to_return.append(row)
+        return (-1, SEARCH_NOT_EXISTS) if len(to_return) == 0 else to_return
