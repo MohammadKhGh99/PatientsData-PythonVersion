@@ -91,7 +91,7 @@ class GUI:
     def insert_date(self, our_choice):
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
         self.widgets_dict[ID][1].insert(0, our_choice[ID[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[GENDER[1:]])
+        self.widgets_dict[GENDER][1].insert(0, our_choice[GENDER[1:]])
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
@@ -104,7 +104,6 @@ class GUI:
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
         self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-
 
     def __search_button_func(self):
         self.hide_canvas_content()
@@ -143,7 +142,6 @@ class GUI:
                     else:
                         self.unhide_widgets()
                     self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-
 
                 done_button = Button(self.__canvas, text=DONE, command=show_data)
                 done_button.place(x=WIDGETS_X - 70, y=RESULTS_Y + 40, anchor="e")
@@ -207,7 +205,7 @@ class GUI:
 
     def create_social(self):
         social_value = StringVar(self.__canvas)
-        social_label = Label(self.__canvas, text=SOCIAL_SIT, font=("Times", 20), bg="white")
+        social_label = Label(self.__canvas, text=SOCIAL, font=("Times", 20), bg="white")
         social_label.place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
         social_options = OptionMenu(self.__canvas, social_value, *SOCIALS)
         social_options.place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
@@ -429,14 +427,14 @@ class GUI:
         # todo - don't change the order of this list, "delete" VERY IMPORTANT!!!
         if GUI.first_time:
             self.__canvas_content += [name_label, name_entry, pid_label, pid_entry, gender_label, gender_options,
-                                      social_label, social_options, age_label, age_entry,
-                                      children_label, children_entry, prayer_label, prayer_options, health_label,
-                                      health_entry, work_label, work_entry, companion_label, companion_entry,
-                                      city_label, city_entry, phone_label, phone_entry, description_label,
-                                      description_text, diagnosis_label, diagnosis_text, therapy_label, therapy_text,
-                                      save_button, ignore_button, id_err_label, age_err_label, phone_err_label,
-                                      child_err_label, age_err_label, id_err_label]
-
+                                      gender_value, social_label, social_options, social_value, age_label, age_entry,
+                                      children_label, children_entry, prayer_label, prayer_options, prayer_value,
+                                      health_label, health_entry, work_label, work_entry, companion_label,
+                                      companion_entry, city_label, city_entry, phone_label, phone_entry,
+                                      description_label, description_text, diagnosis_label, diagnosis_text,
+                                      therapy_label, therapy_text, save_button, ignore_button, id_err_label,
+                                      age_err_label, phone_err_label, child_err_label, age_err_label, id_err_label]
+            
             self.fill_dict(*self.__canvas_content[:-6])
 
             self.widgets += [name_entry, pid_entry, age_entry, children_entry, health_entry, work_entry,
@@ -474,18 +472,19 @@ class GUI:
         else:
             self.unhide_widgets()
 
-    def fill_dict(self, name_label, name_entry, pid_label, pid_entry, gender_label, gender_options, social_label,
-                  social_options, age_label, age_entry, children_label, children_entry, prayer_label, prayer_options,
-                  health_label, health_entry, work_label, work_entry, companion_label, companion_entry, city_label,
-                  city_entry, phone_label, phone_entry, description_label, description_text, diagnosis_label,
-                  diagnosis_text, therapy_label, therapy_text, save_button, ignore_button):
+    def fill_dict(self, name_label, name_entry, pid_label, pid_entry, gender_label, gender_options, gender_value,
+                  social_label, social_options, social_value, age_label, age_entry, children_label, children_entry,
+                  prayer_label, prayer_options, prayer_value, health_label, health_entry, work_label, work_entry,
+                  companion_label, companion_entry, city_label, city_entry, phone_label, phone_entry, description_label,
+                  description_text, diagnosis_label, diagnosis_text, therapy_label, therapy_text, save_button,
+                  ignore_button):
         self.widgets_dict[NAME] = (name_label, name_entry)
         self.widgets_dict[ID] = (pid_label, pid_entry)
-        self.widgets_dict[GENDER] = (gender_label, gender_options)
-        self.widgets_dict[SOCIAL_SIT] = (social_label, social_options)
+        self.widgets_dict[GENDER] = (gender_label, gender_options, gender_value)
+        self.widgets_dict[SOCIAL] = (social_label, social_options, social_value)
         self.widgets_dict[AGE] = (age_label, age_entry)
         self.widgets_dict[CHILDREN] = (children_label, children_entry)
-        self.widgets_dict[PRAYER] = (prayer_label, prayer_options)
+        self.widgets_dict[PRAYER] = (prayer_label, prayer_options, prayer_value)
         self.widgets_dict[HEALTH] = (health_label, health_entry)
         self.widgets_dict[WORK] = (work_label, work_entry)
         self.widgets_dict[COMPANION] = (companion_label, companion_entry)
@@ -501,7 +500,7 @@ class GUI:
         self.widgets_dict[NAME][0].place(x=LABELS_X, y=NAME_Y, anchor="w")
         self.widgets_dict[ID][0].place(x=ID_LBL_X, y=ID_Y, anchor="w")
         self.widgets_dict[GENDER][0].place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
-        self.widgets_dict[SOCIAL_SIT][0].place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
+        self.widgets_dict[SOCIAL][0].place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
         self.widgets_dict[AGE][0].place(x=AGE_LBL_X, y=AGE_Y, anchor="w")
         self.widgets_dict[CHILDREN][0].place(x=CHILDREN_LBL_X, y=CHILDREN_Y, anchor="w")
         self.widgets_dict[PRAYER][0].place(x=PRAYER_LBL_X, y=PRAYER_Y, anchor="w")
@@ -517,7 +516,7 @@ class GUI:
         self.widgets_dict[NAME][1].place(x=WIDGETS_X, y=NAME_Y, anchor="e")
         self.widgets_dict[ID][1].place(x=ID_WDG_X, y=ID_Y, anchor="e")
         self.widgets_dict[GENDER][1].place(x=GENDER_WDG_X, y=GENDER_Y, anchor="e")
-        self.widgets_dict[SOCIAL_SIT][1].place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
+        self.widgets_dict[SOCIAL][1].place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
         self.widgets_dict[AGE][1].place(x=AGE_WDG_X, y=AGE_Y, anchor="e")
         self.widgets_dict[CHILDREN][1].place(x=CHILDREN_WDG_X, y=CHILDREN_Y, anchor="e")
         self.widgets_dict[PRAYER][1].place(x=PRAYER_WDG_X, y=PRAYER_Y, anchor="e")

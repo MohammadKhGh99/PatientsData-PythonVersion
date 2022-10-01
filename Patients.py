@@ -41,7 +41,7 @@ class Patients:
         if not os.path.exists(os.path.join(this_dir, csv_file)):
             with open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig", newline='\n') as f:
                 writer = csv.writer(f)
-                first_row = [NAME[1:], ID[1:], GENDER[1:], SOCIAL_SIT[1:], AGE[1:], CHILDREN[1:],
+                first_row = [NAME[1:], ID[1:], GENDER[1:], SOCIAL[1:], AGE[1:], CHILDREN[1:],
                              PRAYER[1:], HEALTH[1:], WORK[1:], COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:],
                              DIAGNOSIS[1:], THERAPY[1:]]
                 writer.writerow(first_row)
