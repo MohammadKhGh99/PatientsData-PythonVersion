@@ -138,7 +138,7 @@ class GUI:
         if GUI.first_search:
             search_value = StringVar()
 
-            def done_search_func():
+            def search_func():
                 nonlocal search_value
                 search_val = search_value.get()
                 self.hide_canvas_content()
@@ -169,8 +169,9 @@ class GUI:
                     self.search_dict[DONE].place_forget()
 
                     our_choice = data_dict[search_option_value.get()]
+                    print(GUI.first_time)
                     if GUI.first_time:
-                        GUI.first_time = False
+                        # GUI.first_time = False
                         self.create_all(after_search=True)
                     else:
                         self.unhide_widgets()
@@ -181,7 +182,7 @@ class GUI:
                 self.search_dict[DONE] = done_button
 
             search_option = StringVar(self.__canvas)
-            search_option.set(ALL_NAME)
+            search_option.set(FNAME)
 
             style = ttk.Style(self.__canvas)
             style.configure("Wild.TRadiobutton", background="white")
@@ -189,7 +190,7 @@ class GUI:
             res = self.search_options_buttons(search_option)
             fname_search, fmname_search, flname_search, lname_search, all_name_search, id_search = res
 
-            search_button = Button(self.__canvas, text=SEARCH, font=("Times", 15), command=done_search_func)
+            search_button = Button(self.__canvas, text=SEARCH, font=("Times", 15), command=search_func)
             search_button.place(x=LABELS_X, y=SEARCH_Y, anchor="w")
 
             search_entry = Entry(self.__canvas, width=30, font=("Times", 20), textvariable=search_value,
@@ -445,7 +446,7 @@ class GUI:
             if not phone_flag and not id_flag and not child_flag and not age_flag:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
-
+                print("hi")
                 self.__patients.add_patient(patient, after_search)
                 for widget in self.widgets:
                     if type(widget) is Entry:

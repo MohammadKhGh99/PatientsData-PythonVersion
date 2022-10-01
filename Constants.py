@@ -16,9 +16,6 @@ ALL_NAME_Y = 250
 
 ID_SEARCH_Y = 275
 
-# MNAME = "الأب"
-# LNAME = "العائلة"
-
 GENDER = ":الجنس"
 GENDERS = ["ذكر", "أنثى"]
 GENDER_Y = 160
@@ -79,7 +76,6 @@ WORK_Y = 200
 WORK_LBL_X = 820
 WORK_WDG_X = 810
 
-# BIRTH = ":تاريخ الولادة"
 COMPANION = ":المرافق"
 COMPANION_Y = 200
 COMPANION_LBL_X = 510
@@ -106,7 +102,7 @@ NAME_SEARCH_X = WIDGETS_X - 450
 ID_SEARCH = ID[1:]
 
 NAME_NOT_EXISTS = "!لا يمكن إيجاد الإسم"
-ID_NOT_EXISTS = "!لا يمكن إيجاد ؤقم الهوية"
+ID_NOT_EXISTS = "!لا يمكن إيجاد رقم الهوية"
 
 SEARCH = "البحث"
 SEARCH_Y = 150

@@ -2,6 +2,7 @@
 import csv
 import os
 from Constants import *
+import pandas as pd
 
 
 class Patient:
@@ -40,11 +41,7 @@ class Patients:
 
         if not os.path.exists(os.path.join(this_dir, csv_file)):
             with open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig", newline='\n') as f:
-                writer = csv.writer(f)
-                first_row = [ALL_NAME, GENDER[1:], SOCIAL[1:], AGE[1:], CHILDREN[1:],
-                             PRAYER[1:], HEALTH[1:], WORK[1:], COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:],
-                             DIAGNOSIS[1:], THERAPY[1:]]
-                writer.writerow(first_row)
+                csv.writer(f).writerow(ALL_DATA)
 
     def add_patient(self, patient: Patient, after_search):
         with open(os.path.join(this_dir, csv_file), 'a', encoding="utf-8-sig", newline='\n') as f:
@@ -53,16 +50,18 @@ class Patients:
                        patient.description, patient.diagnosis, patient.therapy]
 
             if after_search:
-                cur_row = self.search_patient(option=ALL_NAME, name=patient.name)[0]
-                for i, item in enumerate(cur_row):
-                    item[1] = new_row[i]
-            writer = csv.writer(f)
-            self.patients.append(patient)
-
-            writer.writerow(new_row)
+                df = pd.read_csv(os.path.join(this_dir, csv_file))
+                idx = df[df[ALL_NAME] == patient.name].index[0]
+                df.loc[idx, ALL_DATA] = new_row
+                df.to_csv(os.path.join(this_dir, csv_file), index=False)
+            else:
+                writer = csv.writer(f)
+                # self.patients.append(patient)
+                writer.writerow(new_row)
 
     def remove_patient(self, patient: Patient):
-        self.patients.remove(patient)
+        pass
+        # self.patients.remove(patient)
 
     def search_patient(self, option: str = NAME_SEARCH, name: str = None, id_number: str = None):
         with open(os.path.join(this_dir, csv_file), 'r', encoding="utf-8-sig", newline='\n') as f:
