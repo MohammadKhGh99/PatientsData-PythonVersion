@@ -1,5 +1,23 @@
-NAME = ":الإسم"
+FNAME = " الإسم الشخصي"
+FNAME_Y = 150
 NAME_Y = 160
+
+FMNAME = "الإسم الشخصي واسم الأب"
+FMNAME_Y = 175
+
+FLNAME = "الإسم الشخصي واسم العائلة"
+FLNAME_Y = 200
+
+LNAME = "إسم العائلة"
+LNAME_Y = 225
+
+ALL_NAME = "الإسم الثلاثي"
+ALL_NAME_Y = 250
+
+ID_SEARCH_Y = 275
+
+# MNAME = "الأب"
+# LNAME = "العائلة"
 
 GENDER = ":الجنس"
 GENDERS = ["ذكر", "أنثى"]
@@ -80,15 +98,15 @@ PHONE_WDG_X = 800
 TITLE = "بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمْ"
 SUBJECT = "بطاقة علاج"
 
-ALL_DATA = [NAME[1:], ID[1:], GENDER[1:], SOCIAL[1:], AGE[1:], CHILDREN[1:], PRAYER[1:], HEALTH[1:], WORK[1:],
+ALL_DATA = [ALL_NAME, ID[1:], GENDER[1:], SOCIAL[1:], AGE[1:], CHILDREN[1:], PRAYER[1:], HEALTH[1:], WORK[1:],
             COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:], DIAGNOSIS[1:], THERAPY[1:]]
 
-NAME_SEARCH = NAME[1:]
+NAME_SEARCH = FNAME[1:]
+NAME_SEARCH_X = WIDGETS_X - 450
 ID_SEARCH = ID[1:]
 
-NAME_SEARCH_ERR = "name search error"
-ID_SEARCH_ERR = "id search error"
-SEARCH_NOT_EXISTS = "not exists"
+NAME_NOT_EXISTS = "!لا يمكن إيجاد الإسم"
+ID_NOT_EXISTS = "!لا يمكن إيجاد ؤقم الهوية"
 
 SEARCH = "البحث"
 SEARCH_Y = 150
@@ -106,5 +124,6 @@ SAVE_X = 75
 SAVE_Y = 700
 
 DONE = "تم"
+
 
 

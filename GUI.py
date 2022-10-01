@@ -73,7 +73,7 @@ class GUI:
 
     def hide_canvas_content(self):
         for content in self.__canvas_content:
-            if content is None:
+            if content is None or type(content) is StringVar:
                 continue
             if type(content) is ScrolledText:
                 content.frame.place_forget()
@@ -89,21 +89,48 @@ class GUI:
                 content.place_forget()
 
     def insert_date(self, our_choice):
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
+        self.widgets_dict[ALL_NAME][1].insert(0, our_choice[ALL_NAME])
         self.widgets_dict[ID][1].insert(0, our_choice[ID[1:]])
-        self.widgets_dict[GENDER][1].insert(0, our_choice[GENDER[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
-        self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
+        self.widgets_dict[GENDER][2].set(our_choice[GENDER[1:]])
+        self.widgets_dict[SOCIAL][2].set(our_choice[SOCIAL[1:]])
+        self.widgets_dict[AGE][1].insert(0, our_choice[AGE[1:]])
+        self.widgets_dict[CHILDREN][1].insert(0, our_choice[CHILDREN[1:]])
+        self.widgets_dict[PRAYER][2].set(our_choice[PRAYER[1:]])
+        self.widgets_dict[HEALTH][1].insert(0, our_choice[HEALTH[1:]])
+        self.widgets_dict[WORK][1].insert(0, our_choice[WORK[1:]])
+        self.widgets_dict[COMPANION][1].insert(0, our_choice[COMPANION[1:]])
+        self.widgets_dict[CITY][1].insert(0, our_choice[CITY[1:]])
+        self.widgets_dict[PHONE][1].insert(0, our_choice[PHONE[1:]])
+        self.widgets_dict[DESCRIPTION][1].insert('1.0', our_choice[DESCRIPTION[1:]])
+        self.widgets_dict[DIAGNOSIS][1].insert('1.0', our_choice[DIAGNOSIS[1:]])
+        self.widgets_dict[THERAPY][1].insert('1.0', our_choice[THERAPY[1:]])
+
+    def search_options_buttons(self, search_option):
+        fname_search = ttk.Radiobutton(self.__canvas, text=FNAME, value=FNAME, variable=search_option,
+                                       style="Wild.TRadiobutton")
+        fname_search.place(x=NAME_SEARCH_X, y=FNAME_Y, anchor="e")
+
+        fmname_search = ttk.Radiobutton(self.__canvas, text=FMNAME, value=FMNAME, variable=search_option,
+                                        style="Wild.TRadiobutton")
+        fmname_search.place(x=NAME_SEARCH_X, y=FMNAME_Y, anchor="e")
+
+        flname_search = ttk.Radiobutton(self.__canvas, text=FLNAME, value=FLNAME, variable=search_option,
+                                        style="Wild.TRadiobutton")
+        flname_search.place(x=NAME_SEARCH_X, y=FLNAME_Y, anchor="e")
+
+        lname_search = ttk.Radiobutton(self.__canvas, text=LNAME, value=LNAME, variable=search_option,
+                                       style="Wild.TRadiobutton")
+        lname_search.place(x=NAME_SEARCH_X, y=LNAME_Y, anchor="e")
+
+        all_name_search = ttk.Radiobutton(self.__canvas, text=ALL_NAME, value=ALL_NAME, variable=search_option,
+                                          style="Wild.TRadiobutton")
+        all_name_search.place(x=NAME_SEARCH_X, y=ALL_NAME_Y, anchor="e")
+
+        id_search = ttk.Radiobutton(self.__canvas, text=ID[1:], value=ID[1:], variable=search_option,
+                                    style="Wild.TRadiobutton")
+        id_search.place(x=NAME_SEARCH_X, y=ID_SEARCH_Y, anchor="e")
+
+        return fname_search, fmname_search, flname_search, lname_search, all_name_search, id_search
 
     def __search_button_func(self):
         self.hide_canvas_content()
@@ -111,22 +138,26 @@ class GUI:
         if GUI.first_search:
             search_value = StringVar()
 
-            def done_func():
+            def done_search_func():
                 nonlocal search_value
-                search_value = search_value.get()
+                search_val = search_value.get()
                 self.hide_canvas_content()
 
-                patients_lst = self.__patients.search_patient(id_or_name=id_or_name.get(), name=search_value,
-                                                              id_number=search_value)
-                temp_lst = {f'{row[NAME[1:]]} - {row[CITY[1:]]}': row for row in patients_lst}
+                if search_option == ID_SEARCH:
+                    patients_lst = self.__patients.search_patient(option=search_option.get(), id_number=search_val)
+                else:
+                    patients_lst = self.__patients.search_patient(option=search_option.get(), name=search_val)
 
-                lst = [f'{row[NAME[1:]]} - {row[CITY[1:]]}' for row in patients_lst]
+                if type(patients_lst) is tuple:
+                    messagebox.showwarning("لا يوجد", patients_lst[1])
+                    return
+
+                data_dict = {f'{row[ALL_NAME]} - {row[CITY[1:]]}': row for row in patients_lst}
 
                 search_option_value = StringVar(self.__canvas)
-
                 result_label = Label(self.__canvas, text=RESULTS, font=("Times", 20), bg="white")
                 result_label.place(x=LABELS_X, y=RESULTS_Y, anchor="w")
-                result_options = OptionMenu(self.__canvas, search_option_value, *lst)
+                result_options = OptionMenu(self.__canvas, search_option_value, *data_dict.keys())
                 result_options.place(x=WIDGETS_X, y=RESULTS_Y, anchor="e")
 
                 self.search_content += [result_label, result_options]
@@ -136,49 +167,60 @@ class GUI:
                     self.search_dict[RESULTS][0].place_forget()
                     self.search_dict[RESULTS][1].place_forget()
                     self.search_dict[DONE].place_forget()
-                    our_choice = temp_lst[search_option_value.get()]
+
+                    our_choice = data_dict[search_option_value.get()]
                     if GUI.first_time:
-                        self.create_all()
+                        GUI.first_time = False
+                        self.create_all(after_search=True)
                     else:
                         self.unhide_widgets()
-                    self.widgets_dict[NAME][1].insert(0, our_choice[NAME[1:]])
+                    self.insert_date(our_choice)
 
                 done_button = Button(self.__canvas, text=DONE, command=show_data)
                 done_button.place(x=WIDGETS_X - 70, y=RESULTS_Y + 40, anchor="e")
                 self.search_dict[DONE] = done_button
 
-            id_or_name = StringVar(self.__canvas)
-            id_or_name.set(NAME[1:])
+            search_option = StringVar(self.__canvas)
+            search_option.set(ALL_NAME)
 
-            name_search_option = ttk.Radiobutton(self.__canvas, text=NAME[1:], value=NAME[1:], variable=id_or_name)
-            name_search_option.place(x=WIDGETS_X - 450, y=SEARCH_Y - 20, anchor="e")
+            style = ttk.Style(self.__canvas)
+            style.configure("Wild.TRadiobutton", background="white")
 
-            id_search_option = ttk.Radiobutton(self.__canvas, text=ID[1:], value=ID[1:], variable=id_or_name)
-            id_search_option.place(x=WIDGETS_X - 450, y=SEARCH_Y + 15, anchor="e")
+            res = self.search_options_buttons(search_option)
+            fname_search, fmname_search, flname_search, lname_search, all_name_search, id_search = res
 
-            search_button = Button(self.__canvas, text=SEARCH, font=("Times", 15), command=done_func)
+            search_button = Button(self.__canvas, text=SEARCH, font=("Times", 15), command=done_search_func)
             search_button.place(x=LABELS_X, y=SEARCH_Y, anchor="w")
 
             search_entry = Entry(self.__canvas, width=30, font=("Times", 20), textvariable=search_value,
                                  justify="right", highlightthickness=5)
             search_entry.place(x=WIDGETS_X, y=SEARCH_Y, anchor="e")
 
-            self.search_content += [search_button, search_entry, name_search_option, id_search_option]
+            self.search_content += [search_button, search_entry, all_name_search, fmname_search, flname_search,
+                                    fname_search, id_search, lname_search]
 
             self.search_dict[SEARCH] = (search_entry, search_button)
-            self.search_dict[NAME] = name_search_option
-            self.search_dict[ID] = id_search_option
+            self.search_dict[ALL_NAME] = all_name_search
+            self.search_dict[FLNAME] = flname_search
+            self.search_dict[FMNAME] = fmname_search
+            self.search_dict[FNAME] = fname_search
+            self.search_dict[LNAME] = lname_search
+            self.search_dict[ID] = id_search
         else:
             self.search_dict[SEARCH][0].place(x=WIDGETS_X, y=SEARCH_Y, anchor="e")
             self.search_dict[SEARCH][1].place(x=LABELS_X, y=SEARCH_Y, anchor="w")
-            self.search_dict[NAME].place(x=WIDGETS_X - 450, y=SEARCH_Y - 20, anchor="e")
-            self.search_dict[ID].place(x=WIDGETS_X - 450, y=SEARCH_Y + 15, anchor="e")
+            self.search_dict[ALL_NAME].place(x=NAME_SEARCH_X, y=ALL_NAME_Y, anchor="e")
+            self.search_dict[FLNAME].place(x=NAME_SEARCH_X, y=FLNAME_Y, anchor="e")
+            self.search_dict[FMNAME].place(x=NAME_SEARCH_X, y=FMNAME_Y, anchor="e")
+            self.search_dict[FNAME].place(x=NAME_SEARCH_X, y=FNAME_Y, anchor="e")
+            self.search_dict[LNAME].place(x=NAME_SEARCH_X, y=LNAME_Y, anchor="e")
+            self.search_dict[ID].place(x=WIDGETS_X - 450, y=ID_SEARCH_Y, anchor="e")
             self.search_dict[RESULTS][0].place(x=LABELS_X, y=RESULTS_Y, anchor="w")
             self.search_dict[RESULTS][1].place(x=WIDGETS_X, y=RESULTS_Y, anchor="e")
 
     def create_name(self):
         name_value = StringVar(self.__canvas)
-        name_label = Label(self.__canvas, text=NAME, font=("Times", 20), bg="white")
+        name_label = Label(self.__canvas, text=":" + ALL_NAME, font=("Times", 20), bg="white")
         name_label.place(x=LABELS_X, y=NAME_Y, anchor="w")
         name_entry = Entry(self.__canvas, textvariable=name_value, width=15, font=("Times", 15), justify="right",
                            highlightthickness=5)
@@ -302,7 +344,7 @@ class GUI:
         therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
         return therapy_label, therapy_text
 
-    def create_all(self):
+    def create_all(self, after_search):
         name_label, name_entry, name_value = self.create_name()
         pid_label, pid_entry, id_value = self.create_id()
         gender_label, gender_options, gender_value = self.create_gender()
@@ -404,7 +446,7 @@ class GUI:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
 
-                self.__patients.add_patient(patient)
+                self.__patients.add_patient(patient, after_search)
                 for widget in self.widgets:
                     if type(widget) is Entry:
                         widget.delete(0, END)
@@ -426,6 +468,7 @@ class GUI:
 
         # todo - don't change the order of this list, "delete" VERY IMPORTANT!!!
         if GUI.first_time:
+            GUI.first_time = False
             self.__canvas_content += [name_label, name_entry, pid_label, pid_entry, gender_label, gender_options,
                                       gender_value, social_label, social_options, social_value, age_label, age_entry,
                                       children_label, children_entry, prayer_label, prayer_options, prayer_value,
@@ -434,7 +477,7 @@ class GUI:
                                       description_label, description_text, diagnosis_label, diagnosis_text,
                                       therapy_label, therapy_text, save_button, ignore_button, id_err_label,
                                       age_err_label, phone_err_label, child_err_label, age_err_label, id_err_label]
-            
+
             self.fill_dict(*self.__canvas_content[:-6])
 
             self.widgets += [name_entry, pid_entry, age_entry, children_entry, health_entry, work_entry,
@@ -447,7 +490,7 @@ class GUI:
         self.hide_canvas_content()
         if GUI.first_add and GUI.first_time:
             GUI.first_add = False
-            self.create_all()
+            self.create_all(False)
             # dates_label = Label(self.__canvas, text=COME_DATES, font=("Times", 20), bg="white")
             # dates_label.place(x=LABELS_X, y=DATES_Y, anchor="w")
             # year_value = StringVar(self.__canvas)
@@ -478,7 +521,7 @@ class GUI:
                   companion_label, companion_entry, city_label, city_entry, phone_label, phone_entry, description_label,
                   description_text, diagnosis_label, diagnosis_text, therapy_label, therapy_text, save_button,
                   ignore_button):
-        self.widgets_dict[NAME] = (name_label, name_entry)
+        self.widgets_dict[ALL_NAME] = (name_label, name_entry)
         self.widgets_dict[ID] = (pid_label, pid_entry)
         self.widgets_dict[GENDER] = (gender_label, gender_options, gender_value)
         self.widgets_dict[SOCIAL] = (social_label, social_options, social_value)
@@ -497,7 +540,7 @@ class GUI:
         self.widgets_dict[IGNORE] = ignore_button
 
     def unhide_widgets(self):
-        self.widgets_dict[NAME][0].place(x=LABELS_X, y=NAME_Y, anchor="w")
+        self.widgets_dict[ALL_NAME][0].place(x=LABELS_X, y=NAME_Y, anchor="w")
         self.widgets_dict[ID][0].place(x=ID_LBL_X, y=ID_Y, anchor="w")
         self.widgets_dict[GENDER][0].place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
         self.widgets_dict[SOCIAL][0].place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
@@ -513,7 +556,7 @@ class GUI:
         self.widgets_dict[DIAGNOSIS][0].place(x=LABELS_X, y=DIAGNOSIS_Y + 15, anchor="w")
         self.widgets_dict[THERAPY][0].place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
 
-        self.widgets_dict[NAME][1].place(x=WIDGETS_X, y=NAME_Y, anchor="e")
+        self.widgets_dict[ALL_NAME][1].place(x=WIDGETS_X, y=NAME_Y, anchor="e")
         self.widgets_dict[ID][1].place(x=ID_WDG_X, y=ID_Y, anchor="e")
         self.widgets_dict[GENDER][1].place(x=GENDER_WDG_X, y=GENDER_Y, anchor="e")
         self.widgets_dict[SOCIAL][1].place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
