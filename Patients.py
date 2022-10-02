@@ -2,18 +2,13 @@
 import csv
 import os
 from Constants import *
-import subprocess
-import sys
-import importlib.util
-package = "pandas"
-
-is_present = importlib.util.find_spec(package)
-if is_present is None:
-    print(package + " is not installed")
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
-else:
-    print("Successfull")
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    import subprocess
+    command_line = "pip install pandas"
+    sub = subprocess.Popen(command_line, stderr=open(os.devnull, 'w'))
+    sub.wait()
 
 
 class Patient:
