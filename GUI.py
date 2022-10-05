@@ -8,17 +8,25 @@ from tkinter import messagebox
 
 
 class GUI:
+    """
+    A class to handle GUI things
+    """
+    # variable to check if this add is the first one or not
     first_add = True
+    # variable to check if this search is the first one or not
     first_search = True
+    # variable to check if this add/search is the first one or not
     first_time = True
 
     def __init__(self):
+        """
+        This is the constructor for the GUI class
+        """
         self.__root = Tk()
         self.__width = self.__root.winfo_screenwidth()
         self.__height = self.__root.winfo_screenheight()
         self.__canvas = Canvas(self.__root, width=self.__width, height=self.__height, bd=10, bg="white")
         self.__canvas.place(x=0, y=0)
-        self.__buttons = []
         self.__canvas_content = []
         self.__patients = p.Patients()
         self.widgets = []
@@ -32,7 +40,6 @@ class GUI:
         this method starts the window of the
         :return: returns nothing
         """
-        # self.__root.configure(background='grey')
         self.__root.geometry(f"{self.__width}x{self.__height}")
         self.__root.title("المعالجة بالرقية الشرعية")
         title = Label(self.__root, text=TITLE, font=("Traditional Arabic", 30), bg="white")
@@ -40,12 +47,14 @@ class GUI:
 
         subject = Label(self.__root, text=SUBJECT, font=("Traditional Arabic", 20), bg="white")
         subject.place(x=self.__width // 2 - 10, y=63)
-        # bg = Label(self.__canvas, image=PhotoImage(file="one.png"))
-        # bg.place(relx=1, rely=0.5, anchor="e")
         self.starting_buttons()
         self.__root.mainloop()
 
     def starting_buttons(self):
+        """
+        This function starts the starting buttons (add, search)
+        :return: Nothing
+        """
         self.__canvas.create_line(1313, 120, self.__width, 120)
         self.__canvas.create_line(1313, 120, 1313, 600)
         self.__canvas.create_line(1313, 600, self.__width, 600)
@@ -61,29 +70,45 @@ class GUI:
         update_button = Button(self.__root, text="تعديل معلومات مريض", font=("Times", 20),
                                command=self.update_patient_button_func)
         update_button.place(x=self.__width, y=450, anchor="e")
-        # how_to_use_button = Button(self.__root, text="كيفية الإستخدام؟", font=("Times", 20), command=self.how_to_use_func)
-        # how_to_use_button.place(relx=1, rely=0.4, anchor="e")
         quit_button = Button(self.__root, text="الخروج", font=("Times", 20), command=self.quit_button_func)
         quit_button.place(x=self.__width, y=550, anchor="e")
 
     def hide_canvas_content(self):
+        """
+        This function hide the canvas content and deletes each widget's content
+        :return: nothing
+        """
         for content in self.__canvas_content:
             if content is None or type(content) is StringVar:
                 continue
             if type(content) is ScrolledText:
+                content.delete('1.0', END)
                 content.frame.place_forget()
+            elif type(content) is Entry:
+                content.delete(0, END)
+                content.place_forget()
             else:
                 content.place_forget()
 
+        # hiding the content of search process
         for content in self.search_content:
             if content is None:
                 continue
             if type(content) is ScrolledText:
+                content.delete('1.0', END)
                 content.frame.place_forget()
+            elif type(content) is Entry:
+                content.delete(0, END)
+                content.place_forget()
             else:
                 content.place_forget()
 
     def insert_date(self, our_choice):
+        """
+        this function insert the required date after searching on someone
+        :param our_choice: the searched row
+        :return: nothing
+        """
         self.widgets_dict[ALL_NAME][1].insert(0, our_choice[ALL_NAME])
         self.widgets_dict[ID][1].insert(0, our_choice[ID[1:]])
         self.widgets_dict[GENDER][2].set(our_choice[GENDER[1:]])
@@ -101,6 +126,11 @@ class GUI:
         self.widgets_dict[THERAPY][1].insert('1.0', our_choice[THERAPY[1:]])
 
     def search_options_buttons(self, search_option):
+        """
+        This function show the check circles, to choose in which way the user wants to search.
+        :param search_option: the chosen option
+        :return: the check buttons
+        """
         fname_search = ttk.Radiobutton(self.__canvas, text=FNAME, value=FNAME, variable=search_option,
                                        style="Wild.TRadiobutton")
         fname_search.place(x=NAME_SEARCH_X, y=FNAME_Y, anchor="e")
@@ -128,6 +158,10 @@ class GUI:
         return fname_search, fmname_search, flname_search, lname_search, all_name_search, id_search
 
     def __search_button_func(self):
+        """
+        This function given to the search button to activate when the button pressed
+        :return: nothin
+        """
         self.hide_canvas_content()
 
         if GUI.first_search:
@@ -162,9 +196,9 @@ class GUI:
                     self.search_dict[RESULTS][0].place_forget()
                     self.search_dict[RESULTS][1].place_forget()
                     self.search_dict[DONE].place_forget()
+                    self.hide_canvas_content()
 
                     our_choice = data_dict[search_option_value.get()]
-                    print(GUI.first_time)
                     if GUI.first_time:
                         # GUI.first_time = False
                         self.create_all(after_search=True)
@@ -175,6 +209,7 @@ class GUI:
                 done_button = Button(self.__canvas, text=DONE, command=show_data)
                 done_button.place(x=WIDGETS_X - 70, y=RESULTS_Y + 40, anchor="e")
                 self.search_dict[DONE] = done_button
+                self.search_content.append(done_button)
 
             search_option = StringVar(self.__canvas)
             search_option.set(FNAME)
@@ -215,6 +250,10 @@ class GUI:
             self.search_dict[RESULTS][1].place(x=WIDGETS_X, y=RESULTS_Y, anchor="e")
 
     def create_name(self):
+        """
+        This function create the label and entry for the name input
+        :return: name's label, entry and value
+        """
         name_value = StringVar(self.__canvas)
         name_label = Label(self.__canvas, text=":" + ALL_NAME, font=("Times", 20), bg="white")
         name_label.place(x=LABELS_X, y=NAME_Y, anchor="w")
@@ -225,6 +264,10 @@ class GUI:
         return name_label, name_entry, name_value
 
     def create_id(self):
+        """
+        This function create the label and entry for the id number input
+        :return: id's label, entry and value
+        """
         id_value = StringVar(self.__canvas)
         pid_label = Label(self.__canvas, text=ID, font=("Times", 20), bg="white")
         pid_label.place(x=ID_LBL_X, y=ID_Y, anchor="w")
@@ -234,6 +277,10 @@ class GUI:
         return pid_label, pid_entry, id_value
 
     def create_gender(self):
+        """
+        This function create the label and option menu for the gender input
+        :return: gender's label, option menu and value
+        """
         gender_value = StringVar(self.__canvas)
         gender_label = Label(self.__canvas, text=GENDER, font=("Times", 20), bg="white")
         gender_label.place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
@@ -242,6 +289,10 @@ class GUI:
         return gender_label, gender_options, gender_value
 
     def create_social(self):
+        """
+        This function create the label and option menu for the social situation input
+        :return: social situation's label, entry and value
+        """
         social_value = StringVar(self.__canvas)
         social_label = Label(self.__canvas, text=SOCIAL, font=("Times", 20), bg="white")
         social_label.place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
@@ -250,6 +301,10 @@ class GUI:
         return social_label, social_options, social_value
 
     def create_age(self):
+        """
+        This function create the label and entry for the age input
+        :return: age's label, entry and value
+        """
         age_value = StringVar(self.__canvas)
         age_label = Label(self.__canvas, text=AGE, font=("Times", 20), bg="white")
         age_label.place(x=AGE_LBL_X, y=AGE_Y, anchor="w")
@@ -258,6 +313,10 @@ class GUI:
         return age_label, age_entry, age_value
 
     def create_children(self):
+        """
+        This function create the label and entry for the children input
+        :return: children's label, entry and value
+        """
         children_value = StringVar(self.__canvas)
         children_label = Label(self.__canvas, text=CHILDREN, font=("Times", 20), bg="white")
         children_label.place(x=CHILDREN_LBL_X, y=CHILDREN_Y, anchor="w")
@@ -267,6 +326,10 @@ class GUI:
         return children_label, children_entry, children_value
 
     def create_prayer(self):
+        """
+        This function create the label and entry for the prayer input
+        :return: prayer's label, option menu and value
+        """
         prayer_value = StringVar(self.__canvas)
         prayer_label = Label(self.__canvas, text=PRAYER, font=("Times", 20), bg="white")
         prayer_label.place(x=PRAYER_LBL_X, y=PRAYER_Y, anchor="w")
@@ -275,6 +338,10 @@ class GUI:
         return prayer_label, prayer_options, prayer_value
 
     def create_health(self):
+        """
+        This function create the label and entry for the health input
+        :return: health's label, entry and value
+        """
         health_value = StringVar(self.__canvas)
         health_label = Label(self.__canvas, text=HEALTH, font=("Times", 20), bg="white")
         health_label.place(x=LABELS_X, y=HEALTH_Y, anchor="w")
@@ -284,6 +351,10 @@ class GUI:
         return health_label, health_entry, health_value
 
     def create_work(self):
+        """
+        This function create the label and entry for the work input
+        :return: work's label, entry and value
+        """
         work_value = StringVar(self.__canvas)
         work_label = Label(self.__canvas, text=WORK, font=("Times", 20), bg="white")
         work_label.place(x=WORK_LBL_X, y=WORK_Y, anchor="w")
@@ -293,6 +364,10 @@ class GUI:
         return work_label, work_entry, work_value
 
     def create_companion(self):
+        """
+        This function create the label and entry for the companion input
+        :return: companion's label, entry and value
+        """
         companion_value = StringVar(self.__canvas)
         companion_label = Label(self.__canvas, text=COMPANION, font=("Times", 20), bg="white")
         companion_label.place(x=COMPANION_LBL_X, y=COMPANION_Y, anchor="w")
@@ -302,6 +377,10 @@ class GUI:
         return companion_label, companion_entry, companion_value
 
     def create_city(self):
+        """
+        This function create the label and entry for the city input
+        :return: city's label, entry and value
+        """
         city_value = StringVar(self.__canvas)
         city_label = Label(self.__canvas, text=CITY, font=("Times", 20), bg="white")
         city_label.place(x=CITY_LBL_X, y=CITY_Y, anchor="w")
@@ -311,6 +390,10 @@ class GUI:
         return city_label, city_entry, city_value
 
     def create_phone(self):
+        """
+        This function create the label and entry for the phone number input
+        :return: phone number's label, entry and value
+        """
         phone_value = StringVar(self.__canvas)
         phone_label = Label(self.__canvas, text=PHONE, font=("Times", 20), bg="white")
         phone_label.place(x=PHONE_LBL_X, y=PHONE_Y, anchor="w")
@@ -320,6 +403,10 @@ class GUI:
         return phone_label, phone_entry, phone_value
 
     def create_description(self):
+        """
+        This function create the label and entry for the description input
+        :return: description's label and text
+        """
         description_label = Label(self.__canvas, text=DESCRIPTION, font=("jameel noori nastaleeq", 20), bg="white")
         description_label.place(x=LABELS_X, y=DESCRIPTION_Y - 30, anchor="w")
         description_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
@@ -327,6 +414,10 @@ class GUI:
         return description_label, description_text
 
     def create_diagnosis(self):
+        """
+        This function create the label and entry for the diagnosis input
+        :return: diagnosis's label and text
+        """
         diagnosis_label = Label(self.__canvas, text=DIAGNOSIS, font=("Times", 20), bg="white")
         diagnosis_label.place(x=LABELS_X, y=DIAGNOSIS_Y + 15, anchor="w")
         diagnosis_text = ScrolledText(self.__canvas, height=2, width=86, font=("Times", 15), highlightthickness=5)
@@ -334,6 +425,10 @@ class GUI:
         return diagnosis_label, diagnosis_text
 
     def create_therapy(self):
+        """
+        This function create the label and entry for the therapy input
+        :return: therapy's label and text
+        """
         therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
         therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
         therapy_text = ScrolledText(self.__canvas, height=13, width=86, font=("Times", 15), highlightthickness=5)
@@ -341,6 +436,11 @@ class GUI:
         return therapy_label, therapy_text
 
     def create_all(self, after_search):
+        """
+        This function creates all the inputs labels, entries, texts and values and the save and ignore buttons.
+        :param after_search: boolean variable to check if this call fopr this function is after a search or not
+        :return: nothing
+        """
         name_label, name_entry, name_value = self.create_name()
         pid_label, pid_entry, id_value = self.create_id()
         gender_label, gender_options, gender_value = self.create_gender()
@@ -441,7 +541,6 @@ class GUI:
             if not phone_flag and not id_flag and not child_flag and not age_flag:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
-                print("hi")
                 self.__patients.add_patient(patient, after_search)
                 for widget in self.widgets:
                     if type(widget) is Entry:
@@ -450,7 +549,6 @@ class GUI:
                         widget.delete('1.0', END)
                 for value in self.options_values:
                     value.set('-')
-                # gender_options.selection_clear()
                 messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
             else:
                 messagebox.showerror("! فشل الحفظ", "! فشل الحفظ")
@@ -482,7 +580,10 @@ class GUI:
             self.options_values += [gender_value, social_value, prayer_value]
 
     def add_new_patient_button_func(self):
-        # self.__canvas.delete(0, END)
+        """
+        This function adds a patient to the database using the add_patient function in Patients file
+        :return: nothing
+        """
         self.hide_canvas_content()
         if GUI.first_add and GUI.first_time:
             GUI.first_add = False
@@ -536,6 +637,10 @@ class GUI:
         self.widgets_dict[IGNORE] = ignore_button
 
     def unhide_widgets(self):
+        """
+        This function unhide all the hidden widgets after searching or when we want to add a new patient
+        :return: nothing
+        """
         self.widgets_dict[ALL_NAME][0].place(x=LABELS_X, y=NAME_Y, anchor="w")
         self.widgets_dict[ID][0].place(x=ID_LBL_X, y=ID_Y, anchor="w")
         self.widgets_dict[GENDER][0].place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
@@ -578,20 +683,15 @@ class GUI:
         pass
 
     def quit_button_func(self):
+        """
+        This function activated when quit button pressed to quit the program
+        :return: nothing
+        """
         quitting = askyesno("!المغادرة", "هل أنت متأكد من المغادرة؟")
         if quitting:
-            # self.__patients.csv_file.close()
             self.__root.destroy()
-            # return 0
-            # exit(0)
-            # quit()
-        else:
-            pass
 
 
 if __name__ == "__main__":
-
-    # implement pip as a subprocess:
-
     gui = GUI()
     gui.starting_the_window()

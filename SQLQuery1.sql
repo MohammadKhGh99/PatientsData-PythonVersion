@@ -3,8 +3,8 @@ create table Patient(
 	id_number varchar(9),
 	gender varchar(7),
 	social varchar(15),
-	age int,
-	children int,
+	age varchar(3),
+	children varchar(3),
 	prayer bit,
 	health varchar(20),
 	work varchar(20),
@@ -15,3 +15,4 @@ create table Patient(
 	diagnosis varchar(100),
 	therapy varchar(400)
 )
+
