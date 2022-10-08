@@ -1,5 +1,16 @@
 from tkinter import *
 from tkinter.messagebox import askyesno
+
+try:
+    import pyodbc
+except ModuleNotFoundError:
+    import subprocess
+    import os
+
+    command_line = "pip install pyodbc"
+    sub = subprocess.Popen(command_line, stderr=open(os.devnull, 'w'))
+    sub.wait()
+
 import Patients as p
 from Constants import *
 import tkinter.ttk as ttk
@@ -17,6 +28,8 @@ class GUI:
     first_search = True
     # variable to check if this add/search is the first one or not
     first_time = True
+
+    after_search = False
 
     def __init__(self):
         """
@@ -163,6 +176,7 @@ class GUI:
         :return: nothin
         """
         self.hide_canvas_content()
+        GUI.after_search = True
 
         if GUI.first_search:
             search_value = StringVar()
@@ -172,7 +186,7 @@ class GUI:
                 search_val = search_value.get()
                 self.hide_canvas_content()
 
-                if search_option == ID_SEARCH:
+                if search_option.get() == ID_SEARCH:
                     patients_lst = self.__patients.search_patient(option=search_option.get(), id_number=search_val)
                 else:
                     patients_lst = self.__patients.search_patient(option=search_option.get(), name=search_val)
@@ -201,7 +215,9 @@ class GUI:
                     our_choice = data_dict[search_option_value.get()]
                     if GUI.first_time:
                         # GUI.first_time = False
-                        self.create_all(after_search=True)
+
+
+                        self.create_all()
                     else:
                         self.unhide_widgets()
                     self.insert_date(our_choice)
@@ -435,10 +451,9 @@ class GUI:
         therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
         return therapy_label, therapy_text
 
-    def create_all(self, after_search):
+    def create_all(self):
         """
         This function creates all the inputs labels, entries, texts and values and the save and ignore buttons.
-        :param after_search: boolean variable to check if this call fopr this function is after a search or not
         :return: nothing
         """
         name_label, name_entry, name_value = self.create_name()
@@ -461,6 +476,7 @@ class GUI:
         id_err_label, age_err_label, child_err_label, phone_err_label = None, None, None, None
 
         def save_button_func():
+            print(GUI.after_search)
             name = name_value.get()
             # check
             id_number = id_value.get()
@@ -541,15 +557,20 @@ class GUI:
             if not phone_flag and not id_flag and not child_flag and not age_flag:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
-                self.__patients.add_patient(patient, after_search)
-                for widget in self.widgets:
-                    if type(widget) is Entry:
-                        widget.delete(0, END)
-                    elif type(widget) is ScrolledText:
-                        widget.delete('1.0', END)
-                for value in self.options_values:
-                    value.set('-')
-                messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
+
+                try:
+                    self.__patients.add_patient(patient, GUI.after_search)
+                    messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
+                except pyodbc.IntegrityError:
+                    messagebox.showwarning("ّ!موجود", "!لقد أدخلت هذا الإسم مسبقًا")
+                finally:
+                    for widget in self.widgets:
+                        if type(widget) is Entry:
+                            widget.delete(0, END)
+                        elif type(widget) is ScrolledText:
+                            widget.delete('1.0', END)
+                    for value in self.options_values:
+                        value.set('-')
             else:
                 messagebox.showerror("! فشل الحفظ", "! فشل الحفظ")
 
@@ -585,9 +606,10 @@ class GUI:
         :return: nothing
         """
         self.hide_canvas_content()
+        GUI.after_search = False
         if GUI.first_add and GUI.first_time:
             GUI.first_add = False
-            self.create_all(False)
+            self.create_all()
             # dates_label = Label(self.__canvas, text=COME_DATES, font=("Times", 20), bg="white")
             # dates_label.place(x=LABELS_X, y=DATES_Y, anchor="w")
             # year_value = StringVar(self.__canvas)

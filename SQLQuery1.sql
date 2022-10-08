@@ -1,18 +1,29 @@
-create table Patient(
-	name varchar(30) primary key,
-	id_number varchar(9),
-	gender varchar(7),
-	social varchar(15),
-	age varchar(3),
-	children varchar(3),
-	prayer bit,
-	health varchar(20),
-	work varchar(20),
-	companion varchar(30),
-	city varchar(20),
-	phone varchar(12),
-	description varchar(200),
-	diagnosis varchar(100),
-	therapy varchar(400)
+﻿create table Patient(
+	fullname nvarchar(45) primary key,
+	--firstname nvarchar(15),
+	--middlename nvarchar(15),
+	--lastname nvarchar(15),
+	id_number nvarchar(9),
+	gender nvarchar(7),
+	social nvarchar(15),
+	age nvarchar(3),
+	children nvarchar(3),
+	prayer nvarchar(5),
+	health nvarchar(30),
+	work nvarchar(30),
+	companion nvarchar(30),
+	city nvarchar(20),
+	phone nvarchar(12),
+	description nvarchar(200),
+	diagnosis nvarchar(100),
+	therapy nvarchar(400)
 )
 
+select * from Patient
+
+--select * from Patient where cast(Patient.firstname as varchar(15)) = 'محمد'
+
+drop table Patient
+
+
+select @@SERVERNAME
