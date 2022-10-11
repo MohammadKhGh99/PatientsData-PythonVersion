@@ -1,16 +1,6 @@
 from tkinter import *
 from tkinter.messagebox import askyesno
-
-try:
-    import pyodbc
-except ModuleNotFoundError:
-    import subprocess
-    import os
-
-    command_line = "pip install pyodbc"
-    sub = subprocess.Popen(command_line, stderr=open(os.devnull, 'w'))
-    sub.wait()
-
+# import pyodbc
 import Patients as p
 from Constants import *
 import tkinter.ttk as ttk
@@ -447,7 +437,7 @@ class GUI:
         """
         therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
         therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
-        therapy_text = ScrolledText(self.__canvas, height=13, width=86, font=("Times", 15), highlightthickness=5)
+        therapy_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
         therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
         return therapy_label, therapy_text
 
@@ -558,19 +548,19 @@ class GUI:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
 
-                try:
-                    self.__patients.add_patient(patient, GUI.after_search)
-                    messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
-                except pyodbc.IntegrityError:
-                    messagebox.showwarning("ّ!موجود", "!لقد أدخلت هذا الإسم مسبقًا")
-                finally:
-                    for widget in self.widgets:
-                        if type(widget) is Entry:
-                            widget.delete(0, END)
-                        elif type(widget) is ScrolledText:
-                            widget.delete('1.0', END)
-                    for value in self.options_values:
-                        value.set('-')
+                # try:
+                self.__patients.add_patient(patient, GUI.after_search)
+                messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
+                # except pyodbc.IntegrityError:
+                #     messagebox.showwarning("ّ!موجود", "!لقد أدخلت هذا الإسم مسبقًا")
+                # finally:
+                for widget in self.widgets:
+                    if type(widget) is Entry:
+                        widget.delete(0, END)
+                    elif type(widget) is ScrolledText:
+                        widget.delete('1.0', END)
+                for value in self.options_values:
+                    value.set('-')
             else:
                 messagebox.showerror("! فشل الحفظ", "! فشل الحفظ")
 

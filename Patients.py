@@ -1,22 +1,8 @@
 # started at 22.08.2021 at 17:17
-from tkinter import messagebox
-
-import pymssql as pymssql
-
 from Constants import *
-
-try:
-    import pyodbc
-except Exception:
-    import subprocess
-    import os
-
-    command_line = "pip install pyodbc"
-    sub = subprocess.Popen(command_line, stderr=open(os.devnull, 'w'))
-    sub.wait()
-
-
-# import pyodbc
+# import tkinter.messagebox
+# import pymssql
+import pyodbc
 
 
 class Patient:
@@ -82,43 +68,52 @@ class Patients:
         # 'Trusted_Connection=yes;')
 
     def add_patient(self, patient: Patient, after_search):
-        with pymssql.connect(r"MOHAMMADGH-PC\SQLEXPRESS", "m7md", "12345", "Patients") as connection:
+        # mydb = mysql.connector.connect(
+        #     host="MOHAMMADGH-PC",
+        #     instance="SQL EXPRESS",
+        #     user="m7md",
+        #     password="12345",
+        #     port="1433"
+        # )
+
+        # pyodbc.connect(
+            # "DRIVER={SQL Server Native Client 11.0};SERVER=MOHAMMADGH-PC;DATABASE=Patients;UID=m7md;PWD=12345") as connection
+        # with pymssql.connect(r"MOHAMMADGH-PC\SQLEXPRESS", "m7md", "12345", "Patients") as connection:
+        with pyodbc.connect(driver="{SQL Server Native Client 11.0}", host="MOHAMMADGH-PC", database="Patients",
+                            user="m7md", password="12345") as connection:
             with connection.cursor() as cursor:
                 # If we want to save the changes on the patient
                 if after_search:
-                    # Patient.fullname = '{patient.fullname}', "
-                    #                                    f"
                     first, middle, last = patient.fullname.split(" ")
                     cursor.execute(f"update Patient "
-                                   f"set Patient.firstname = '{first}', "
-                                   f"Patient.middlename = '{middle}', "
-                                   f"Patient.lastname = '{last}', "
-                                   f"Patient.id_number = '{patient.id_number}', "
-                                   f"Patient.gender = '{patient.gender}', "
-                                   f"Patient.social = '{patient.social}', "
-                                   f"Patient.age = '{patient.age}', "
-                                   f"Patient.children = '{patient.children}', "
-                                   f"Patient.prayer = '{patient.prayer}', "
-                                   f"Patient.health = '{patient.health}', "
-                                   f"Patient.work = '{patient.work}', "
-                                   f"Patient.companion = '{patient.companion}', "
-                                   f"Patient.city = '{patient.city}', "
-                                   f"Patient.phone = '{patient.phone}', "
-                                   f"Patient.description = '{patient.description}', "
-                                   f"Patient.diagnosis = '{patient.diagnosis}', "
-                                   f"Patient.therapy = '{patient.therapy}' "
-                                   f"where cast(Patient.fullname as varchar(45)) = '{patient.fullname}'")
+                                   f"set firstname = N'{first}', "
+                                   f"middlename = N'{middle}', "
+                                   f"lastname = N'{last}', "
+                                   f"id_number = N'{patient.id_number}', "
+                                   f"gender = N'{patient.gender}', "
+                                   f"social = N'{patient.social}', "
+                                   f"age = N'{patient.age}', "
+                                   f"children = N'{patient.children}', "
+                                   f"prayer = N'{patient.prayer}', "
+                                   f"health = N'{patient.health}', "
+                                   f"work = N'{patient.work}', "
+                                   f"companion = N'{patient.companion}', "
+                                   f"city = N'{patient.city}', "
+                                   f"phone = N'{patient.phone}', "
+                                   f"description = N'{patient.description}', "
+                                   f"diagnosis = N'{patient.diagnosis}', "
+                                   f"therapy = N'{patient.therapy}' "
+                                   f"where fullname = N'{patient.fullname}'")
                     connection.commit()
                 # If we want to save a new patient
                 else:
-                    print(patient.fullname)
                     first, middle, last = patient.fullname.split(" ")
                     cursor.execute(
-                        "INSERT INTO Patient VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                        (patient.fullname, first, middle, last, patient.id_number, patient.gender,
-                         patient.social, patient.age, patient.children, patient.prayer, patient.health,
-                         patient.work, patient.companion, patient.city, patient.phone, patient.description,
-                         patient.diagnosis, patient.therapy))
+                        "INSERT INTO Patient "
+                        "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        (patient.fullname, first, middle, last, patient.id_number, patient.gender, patient.social,
+                         patient.age, patient.children, patient.prayer, patient.health, patient.work, patient.companion,
+                         patient.city, patient.phone, patient.description, patient.diagnosis, patient.therapy))
                     connection.commit()
 
         # todo - csv file version
@@ -142,60 +137,50 @@ class Patients:
 
     def search_patient(self, option: str = NAME_SEARCH, name: str = None, id_number: str = None):
         to_return = []
-        with pymssql.connect(r"MOHAMMADGH-PC\SQLEXPRESS", "m7md", "12345", "Patients") as connection:
-            with connection.cursor() as cursor:
+        try:
+            # with pymssql.connect(r"MOHAMMADGH-PC\SQLEXPRESS", "m7md", "12345", "Patients") as connection:
+            with pyodbc.connect(driver="{SQL Server Native Client 11.0}", host="MOHAMMADGH-PC", database="Patients",
+                                user="m7md", password="12345") as connection:
+                with connection.cursor() as cursor:
 
-                wanted_cols = 'Patient.fullname, Patient.id_number, Patient.gender, Patient.social, Patient.age, ' \
-                              'Patient.children, Patient.prayer, Patient.health, Patient.work, Patient.companion, ' \
-                              'Patient.city, Patient.phone, Patient.description, Patient.diagnosis, Patient.therapy'
+                    wanted_cols = 'fullname, id_number, gender, social, age, children, prayer, health, work, ' \
+                                  'companion, city, phone, description, diagnosis, therapy'
 
+                    if option == ID_SEARCH:
+                        cursor.execute(f"select {wanted_cols} from Patient where cast(id_number as varchar(9)) = '{id_number}'")
+                    else:
+                        if option == ALL_NAME:
+                            cursor.execute(f"select {wanted_cols} from Patient where fullname = N'{name}'")
+                        elif option == FLNAME:
+                            cur = name.split(" ")
+                            cursor.execute(
+                                f"select {wanted_cols} from Patient where firstname = N'{cur[0]}' and lastname = N'{cur[1]}'")
+                        elif option == FMNAME:
+                            cur = name.split(" ")
+                            fmname = "firstname + ' ' + middlename"
+                            cursor.execute(f"select {wanted_cols} from Patient where {fmname} = N'{cur[0]} {cur[1]}'")
+                            # cursor.execute(
+                        elif option == FNAME:
+                            cursor.execute(f"select {wanted_cols} from Patient where firstname = N'{name}'")
+                        elif option == LNAME:
+                            cursor.execute(f"select {wanted_cols} from Patient where lastname = N'{name}'")
+
+                    data = cursor.fetchall()
+                    connection.commit()
+                    for j in range(len(data)):
+                        row = {ALL_DATA[i]: data[j][i] for i in range(len(ALL_DATA))}
+                        to_return.append(row)
+
+            if len(to_return) == 0:
                 if option == ID_SEARCH:
-                    cursor.execute(f"select {wanted_cols} from Patient where cast(Patient.id_number as varchar(9)) = '{id_number}'")
+                    return -1, ID_NOT_EXISTS
                 else:
-                    if option == ALL_NAME:
-                        cursor.execute(f"select {wanted_cols} from Patient where cast(Patient.fullname as varchar(45)) = '{name}'")
-                    elif option == FLNAME:
-                        cur = name.split(" ")
-                        cursor.execute(
-                            f"select {wanted_cols} from Patient where cast(Patient.firstname as varchar(15)) = '{cur[0]}' and cast(Patient.lastname as varchar(15)) = '{cur[1]}'")
-                        # cursor.execute(
-                        #     f"select * from Patient where cast(Patient.name as varchar(30)) like '{cur[0]} _% {cur[1]}'")
-                    elif option == FMNAME:
-                        cur = name.split(" ")
-                        cursor.execute(
-                            f"select {wanted_cols} from Patient where cast(Patient.firstname as varchar(15)) = '{cur[0]}' and cast(Patient.middlename as varchar(15)) = '{cur[1]}'")
-                        # cursor.execute(
-                        #     f"select * from Patient where cast(Patient.name as varchar(30)) like '{cur[0]} {cur[1]} _%'")
-                    elif option == FNAME:
-                        print(name)
-                        cursor.execute(f"select {wanted_cols} from Patient where cast(Patient.firstname as varchar(15)) = '{name}'")
-                        # cursor.execute(f"select * from Patient where cast(Patient.name as varchar(30)) like '^{name} _% _%'")
-                    elif option == LNAME:
-                        cursor.execute(f"select {wanted_cols} from Patient where cast(Patient.lastname as varchar(15)) = '{name}'")
-                        # cursor.execute(f"select * from Patient where cast(Patient.name as varchar(30)) like '_% _% {name}'")
+                    return -1, NAME_NOT_EXISTS
 
-                data = cursor.fetchall()
-                connection.commit()
-                print(data)
-                for j in range(len(data)):
-                    # row = dict()
-                    # for i in range(len(ALL_DATA)):
-                    #     if i == 1 or i == 2 or i == 3:
-                    #         continue
-
-                    row = {ALL_DATA[i]: data[j][i] for i in range(len(ALL_DATA))}
-                    to_return.append(row)
-
-                # cursor.close()
-                # connection.close()
-
-        if len(to_return) == 0:
-            if option == ID_SEARCH:
-                return -1, ID_NOT_EXISTS
-            else:
-                return -1, NAME_NOT_EXISTS
-
-        return to_return
+            return to_return
+        except Exception as e:
+            raise e
+            # tkinter.messagebox.showerror("Error", str(e))
 
     # todo - csv file version
     # with open(os.path.join(this_dir, csv_file), 'r', encoding="utf-8-sig", newline='\n') as f:
