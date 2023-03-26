@@ -94,8 +94,10 @@ PHONE_WDG_X = 800
 TITLE = "بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمْ"
 SUBJECT = "بطاقة علاج"
 
+THERAPYS = [THERAPY[1:] + f" {i}" for i in range(1, 9)]
+
 ALL_DATA = [ALL_NAME, ID[1:], GENDER[1:], SOCIAL[1:], AGE[1:], CHILDREN[1:], PRAYER[1:], HEALTH[1:], WORK[1:],
-            COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:], DIAGNOSIS[1:], THERAPY[1:]]
+            COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:], DIAGNOSIS[1:], *THERAPYS]  # THERAPY[1:]]
 
 NAME_SEARCH = FNAME[1:]
 NAME_SEARCH_X = WIDGETS_X - 450

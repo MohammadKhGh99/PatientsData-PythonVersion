@@ -435,6 +435,7 @@ class GUI:
         This function create the label and entry for the therapy input
         :return: therapy's label and text
         """
+
         therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
         therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
         therapy_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
