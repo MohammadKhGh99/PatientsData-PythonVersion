@@ -28,9 +28,15 @@ class GUI:
         self.__root = Tk()
         self.__width = self.__root.winfo_screenwidth()
         self.__height = self.__root.winfo_screenheight()
-        self.__canvas = Canvas(self.__root, width=self.__width, height=self.__height, bd=10, bg="white")
+        self.__canvas = Canvas(self.__root, width=self.__width, height=self.__height, bd=10, bg="white",
+                               scrollregion=(0, 0, self.__height, self.__width))
         self.__canvas.place(x=0, y=0)
+        self.__scrollbar = Scrollbar(self.__canvas, width=30, orient=VERTICAL)
+        self.__scrollbar.place(x=10, y=200, height=400)
+        # self.__scrollbar.pack(fill=Y, anchor="w")
+
         self.__canvas_content = []
+        self.__therapys = {}
         self.__patients = p.Patients()
         self.widgets = []
         self.options_values = []
@@ -67,12 +73,12 @@ class GUI:
         add_new_button = Button(self.__root, text="إضافة مريض جديد", font=("Times", 20),
                                 command=self.add_new_patient_button_func)
         add_new_button.place(x=self.__width, y=250, anchor="e")
-        remove_button = Button(self.__root, text="حذف مريض", font=("Times", 20),
-                               command=self.delete_patient_button_func)
-        remove_button.place(x=self.__width, y=350, anchor="e")
-        update_button = Button(self.__root, text="تعديل معلومات مريض", font=("Times", 20),
-                               command=self.update_patient_button_func)
-        update_button.place(x=self.__width, y=450, anchor="e")
+        # remove_button = Button(self.__root, text="حذف مريض", font=("Times", 20),
+        #                        command=self.delete_patient_button_func)
+        # remove_button.place(x=self.__width, y=350, anchor="e")
+        # update_button = Button(self.__root, text="تعديل معلومات مريض", font=("Times", 20),
+        #                        command=self.update_patient_button_func)
+        # update_button.place(x=self.__width, y=450, anchor="e")
         quit_button = Button(self.__root, text="الخروج", font=("Times", 20), command=self.quit_button_func)
         quit_button.place(x=self.__width, y=550, anchor="e")
 
@@ -435,12 +441,36 @@ class GUI:
         This function create the label and entry for the therapy input
         :return: therapy's label and text
         """
-
+        therapy_num = StringVar(self.__canvas, value="---")
         therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
         therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
+        therapy_options = OptionMenu(self.__canvas, therapy_num, *THERAPYS_NUMS)
+        therapy_options.place(x=WIDGETS_X, y=THERAPY_Y + 4, anchor="ne")
+
+        # def date_picker():
+        #     pass
+        #
+        # therapy_choose_date = Button(self.__canvas, text="اختر التاريخ", command=date_picker)
+        # therapy_choose_date.place(x=WIDGETS_X - 70, y=THERAPY_Y, anchor="ne")
+
+        date_value = StringVar(self.__canvas)
+        therapy_date = Entry(self.__canvas, textvariable=date_value, width=20, font=("Times", 15),
+                             highlightthickness=5, justify="right")
+        therapy_date.place(x=WIDGETS_X - 90, y=THERAPY_Y, anchor="ne")
+        # therapy_date_entry.place_forget()
+
         therapy_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
-        therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
-        return therapy_label, therapy_text
+
+        # def done_choose_therapy():
+        therapy_text.place(x=WIDGETS_X, y=THERAPY_Y + 40, anchor="ne")
+
+        therapy_done_button = Button(self.__canvas, width=3, text="تم")
+        therapy_done_button.place(x=WIDGETS_X - 350, y=THERAPY_Y + 5, anchor="ne")
+
+        self.__therapys[therapy_num] = (therapy_label, therapy_text, therapy_date, date_value, therapy_done_button,
+                                        therapy_options)
+
+        return therapy_label, therapy_text, therapy_num, therapy_date, date_value
 
     def create_all(self):
         """
@@ -461,13 +491,23 @@ class GUI:
         phone_label, phone_entry, phone_value = self.create_phone()
         description_label, description_text = self.create_description()
         diagnosis_label, diagnosis_text = self.create_diagnosis()
-        therapy_label, therapy_text = self.create_therapy()
+
+        # def add_therapy():
+        #     create_therapy()
+        #     add_therapy_button.destroy()
+        #
+        # add_therapy_button = Button(self.__canvas, text="إضافة علاج", command=add_therapy)
+        # add_therapy_button.place(x=WIDGETS_X, y=THERAPY_Y + 100)
+
+        therapy_label, therapy_text, therapy_num, therapy_date_entry, date_value = self.create_therapy()
+
+
 
         id_flag, age_flag, child_flag, phone_flag = False, False, False, False
         id_err_label, age_err_label, child_err_label, phone_err_label = None, None, None, None
 
         def save_button_func():
-            print(GUI.after_search)
+            # print(GUI.after_search)
             name = name_value.get()
             # check
             id_number = id_value.get()

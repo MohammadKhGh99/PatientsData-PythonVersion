@@ -112,6 +112,17 @@ SEARCH_Y = 150
 RESULTS = ":النتائج"
 RESULTS_Y = 150
 
+FIRST = "الأول"
+SECOND = "الثاني"
+THIRD = "الثالث"
+FOURTH = "الرابع"
+FIFTH = "الخامس"
+SIXTH = "السادس"
+SEVENTH = "السابع"
+EIGHTH = "الثامن"
+
+THERAPYS_NUMS = [FIRST, SECOND, THIRD, FOURTH,
+                 FIFTH, SIXTH, SEVENTH, EIGHTH]
 
 IGNORE = "تجاهل"
 IGNORE_X = 5
