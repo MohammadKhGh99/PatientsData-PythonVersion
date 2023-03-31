@@ -11,7 +11,7 @@ import pandas as pd
 class Patient:
     def __init__(self, name: str, id_number: str, gender: str, social: str, age: str, children: str, prayer: str,
                  health: str, work: str, companion: str, city: str, phone: str, description: str, diagnosis: str,
-                 therapy: str):
+                 therapy_text: str, therapy_num: str, therapy_date: str):
         self.name = name
         self.fname, self.mname, self.lname = name.split(" ")
         self.id_number = id_number
@@ -27,11 +27,14 @@ class Patient:
         self.phone = phone
         self.description = description
         self.diagnosis = diagnosis
-        self.therapy = therapy
+        self.therapy_text = therapy_text
+        self.therapy_date = therapy_date
+        self.therapy_num = therapy_num
+        # self.therapys[therapy_num] = (therapy_date, therapy_text)
 
 
 # todo - csv file version
-folder_name = "therapy"
+folder_name = "علاج"
 csv_file = "patients.csv"
 this_dir = os.path.join(os.path.abspath(os.curdir), folder_name)
 
@@ -45,8 +48,7 @@ this_dir = os.path.join(os.path.abspath(os.curdir), folder_name)
 
 
 class Patients:
-    def __init__(self):#, name, id_number, gender, social, age, children, prayer, health, work,
-                 #companion, city, phone, description, diagnosis, therapy):
+    def __init__(self):
 
         if not os.path.exists(folder_name):
             os.mkdir(folder_name)
@@ -56,22 +58,6 @@ class Patients:
         if not os.path.exists(os.path.join(this_dir, csv_file)):
             with open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig", newline='\n') as f:
                 csv.writer(f).writerow(ALL_DATA)
-
-        # self.name = name
-        # self.id_number = id_number
-        # self.gender = gender
-        # self.social = social
-        # self.age = age
-        # self.children = children
-        # self.prayer = prayer
-        # self.health = health
-        # self.work = work
-        # self.companion = companion
-        # self.city = city
-        # self.phone = phone
-        # self.description = description
-        # self.diagnosis = diagnosis
-        # self.therapy = therapy
 
         # self.connection_settings = 'driver={SQL Server};server=MOHAMMADGH-PC\\SQLEXPRESS;port=1433;uid=m7md;pwd=12345;'
         # 'DRIVER={SQL Server};' +
@@ -141,7 +127,8 @@ class Patients:
         with open(os.path.join(this_dir, csv_file), 'a', encoding="utf-8-sig", newline='') as f:
             new_row = [patient.name, patient.id_number, patient.gender, patient.social, patient.age, patient.children,
                        patient.prayer, patient.health, patient.work, patient.companion, patient.city, patient.phone,
-                       patient.description, patient.diagnosis, patient.therapy]
+                       patient.description, patient.diagnosis]#, patient.therapy_text]
+
 
             if after_search:
                 df = pd.read_csv(os.path.join(this_dir, csv_file))
@@ -150,10 +137,16 @@ class Patients:
                 df.to_csv(os.path.join(this_dir, csv_file), encoding="utf-8-sig", index=False)
             else:
                 new_row_dict = {ALL_DATA[i]:new_row[i] for i in range(len(new_row))}
+                new_row_dict[ALL_DATA[14 + THERAPYS_NUMS.index(patient.therapy_num)]] = patient.therapy_date + ',' + patient.therapy_text
+
                 writer = csv.DictWriter(f, fieldnames=ALL_DATA)
                 # writer = csv.writer(f)
                 # self.patients.append(patient)
                 writer.writerow(new_row_dict)
+
+            # if patient.therapy_text != "":
+            #     therapy_dict = {ALL_DATA[14 + THERAPYS_NUMS.index(patient.therapy_num)]:patient.therapy_date + ',' + patient.therapy_text}
+
 
     def remove_patient(self, patient: Patient):
         pass
