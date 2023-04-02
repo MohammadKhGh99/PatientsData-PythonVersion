@@ -94,22 +94,22 @@ PHONE_WDG_X = 800
 TITLE = "بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمْ"
 SUBJECT = "بطاقة علاج"
 
-FIRST = "الأول"
-SECOND = "الثاني"
-THIRD = "الثالث"
-FOURTH = "الرابع"
-FIFTH = "الخامس"
-SIXTH = "السادس"
-SEVENTH = "السابع"
-EIGHTH = "الثامن"
-
-THERAPYS_NUMS = [FIRST, SECOND, THIRD, FOURTH,
-                 FIFTH, SIXTH, SEVENTH, EIGHTH]
-
-THERAPYS = [THERAPY[1:] + f" {THERAPYS_NUMS[i]}" for i in range(8)]
+# FIRST = "الأول"
+# SECOND = "الثاني"
+# THIRD = "الثالث"
+# FOURTH = "الرابع"
+# FIFTH = "الخامس"
+# SIXTH = "السادس"
+# SEVENTH = "السابع"
+# EIGHTH = "الثامن"
+#
+# THERAPYS_NUMS = [FIRST, SECOND, THIRD, FOURTH,
+#                  FIFTH, SIXTH, SEVENTH, EIGHTH]
+#
+# THERAPYS = [THERAPY[1:] + f" {THERAPYS_NUMS[i]}" for i in range(8)]
 
 ALL_DATA = [ALL_NAME, ID[1:], GENDER[1:], SOCIAL[1:], AGE[1:], CHILDREN[1:], PRAYER[1:], HEALTH[1:], WORK[1:],
-            COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:], DIAGNOSIS[1:], *THERAPYS]  # THERAPY[1:]]
+            COMPANION[1:], CITY[1:], PHONE[1:], DESCRIPTION[1:], DIAGNOSIS[1:], THERAPY[1:]]
 
 NAME_SEARCH = FNAME[1:]
 NAME_SEARCH_X = WIDGETS_X - 450

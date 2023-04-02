@@ -1,6 +1,9 @@
 # started at 22.08.2021 at 17:17
 from Constants import *
-import os
+# import tkinter.messagebox
+# import pymssql
+# import pyodbc
+import os.path
 import csv
 import pandas as pd
 
@@ -8,7 +11,7 @@ import pandas as pd
 class Patient:
     def __init__(self, name: str, id_number: str, gender: str, social: str, age: str, children: str, prayer: str,
                  health: str, work: str, companion: str, city: str, phone: str, description: str, diagnosis: str,
-                 therapy: str):
+                 therapy_text: str, therapy_num: str, therapy_date: str):
         self.name = name
         self.fname, self.mname, self.lname = name.split(" ")
         self.id_number = id_number
@@ -24,7 +27,10 @@ class Patient:
         self.phone = phone
         self.description = description
         self.diagnosis = diagnosis
-        self.therapy = therapy
+        self.therapy_text = therapy_text
+        self.therapy_date = therapy_date
+        self.therapy_num = therapy_num
+        # self.therapys[therapy_num] = (therapy_date, therapy_text)
 
 
 # todo - csv file version
@@ -118,20 +124,28 @@ class Patients:
         #             connection.commit()
 
         # todo - csv file version
-        with open(os.path.join(this_dir, csv_file), 'a', encoding="utf-8-sig", newline='\n') as f:
+        with open(os.path.join(this_dir, csv_file), 'a', encoding="utf-8-sig", newline='') as f:
             new_row = [patient.name, patient.id_number, patient.gender, patient.social, patient.age, patient.children,
                        patient.prayer, patient.health, patient.work, patient.companion, patient.city, patient.phone,
-                       patient.description, patient.diagnosis, patient.therapy]
+                       patient.description, patient.diagnosis]#, patient.therapy_text]
 
             if after_search:
                 df = pd.read_csv(os.path.join(this_dir, csv_file))
                 idx = df[df[ALL_NAME] == patient.name].index[0]
                 df.loc[idx, ALL_DATA] = new_row
-                df.to_csv(os.path.join(this_dir, csv_file), index=False)
+                df.to_csv(os.path.join(this_dir, csv_file), encoding="utf-8-sig", index=False)
             else:
-                writer = csv.writer(f)
+                new_row_dict = {ALL_DATA[i]:new_row[i] for i in range(len(new_row))}
+                new_row_dict[ALL_DATA[14 + THERAPYS_NUMS.index(patient.therapy_num)]] = patient.therapy_date + ',' + patient.therapy_text
+
+                writer = csv.DictWriter(f, fieldnames=ALL_DATA)
+                # writer = csv.writer(f)
                 # self.patients.append(patient)
-                writer.writerow(new_row)
+                writer.writerow(new_row_dict)
+
+            # if patient.therapy_text != "":
+            #     therapy_dict = {ALL_DATA[14 + THERAPYS_NUMS.index(patient.therapy_num)]:patient.therapy_date + ',' + patient.therapy_text}
+
 
     def remove_patient(self, patient: Patient):
         pass
@@ -181,7 +195,7 @@ class Patients:
         #     return to_return
         # except Exception as e:
         #     raise e
-        #     # tkinter.messagebox.showerror("Error", str(e))
+            # tkinter.messagebox.showerror("Error", str(e))
 
         # todo - csv file version
         with open(os.path.join(this_dir, csv_file), 'r', encoding="utf-8-sig", newline='\n') as f:
@@ -205,13 +219,11 @@ class Patients:
                             to_return.append(row)
                     # first last name search
                     elif option == FLNAME:
-                        wanted_name_split = name.split(" ")
-                        if cur_name_split[0] == wanted_name_split[0] and cur_name_split[-1] == wanted_name_split[-1]:
+                        if cur_name_split[0] == name[0] and cur_name_split[-1] == name[-1]:
                             to_return.append(row)
                     # first middle name search
                     elif option == FMNAME:
-                        wanted_name_split = name.split(" ")
-                        if cur_name_split[0] == wanted_name_split[0] and cur_name_split[1] == wanted_name_split[1]:
+                        if cur_name_split[0] == name[0] and cur_name_split[1] == name[1]:
                             to_return.append(row)
                     # first name search
                     elif option == FNAME:

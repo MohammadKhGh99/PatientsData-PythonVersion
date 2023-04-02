@@ -28,9 +28,15 @@ class GUI:
         self.__root = Tk()
         self.__width = self.__root.winfo_screenwidth()
         self.__height = self.__root.winfo_screenheight()
-        self.__canvas = Canvas(self.__root, width=self.__width, height=self.__height, bd=10, bg="white")
+        self.__canvas = Canvas(self.__root, width=self.__width, height=self.__height, bd=10, bg="white",
+                               scrollregion=(0, 0, self.__height, self.__width))
         self.__canvas.place(x=0, y=0)
+        self.__scrollbar = Scrollbar(self.__canvas, width=30, orient=VERTICAL)
+        self.__scrollbar.place(x=10, y=200, height=400)
+        # self.__scrollbar.pack(fill=Y, anchor="w")
+
         self.__canvas_content = []
+        self.__therapys = {}
         self.__patients = p.Patients()
         self.widgets = []
         self.options_values = []
@@ -430,16 +436,47 @@ class GUI:
         diagnosis_text.place(x=WIDGETS_X, y=DIAGNOSIS_Y, anchor="ne")
         return diagnosis_label, diagnosis_text
 
+    # def therapy_work(self):
+    #     therapy_num = StringVar(self.__canvas, value="---")
+    #     therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
+    #     therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
+    #     therapy_options = OptionMenu(self.__canvas, therapy_num, *THERAPYS_NUMS)
+    #     therapy_options.place(x=WIDGETS_X, y=THERAPY_Y + 4, anchor="ne")
+
     def create_therapy(self):
         """
         This function create the label and entry for the therapy input
         :return: therapy's label and text
         """
+        therapy_num = StringVar(self.__canvas, value="---")
         therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
         therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
+        therapy_options = OptionMenu(self.__canvas, therapy_num, *THERAPYS_NUMS)
+        therapy_options.place(x=WIDGETS_X, y=THERAPY_Y + 4, anchor="ne")
+
+        # def date_picker():
+        #     pass
+        #
+        # therapy_choose_date = Button(self.__canvas, text="اختر التاريخ", command=date_picker)
+        # therapy_choose_date.place(x=WIDGETS_X - 70, y=THERAPY_Y, anchor="ne")
+
+        date_value = StringVar(self.__canvas)
+        therapy_date = Entry(self.__canvas, textvariable=date_value, width=20, font=("Times", 15),
+                             highlightthickness=5, justify="right")
+        therapy_date.place(x=WIDGETS_X - 90, y=THERAPY_Y, anchor="ne")
+
         therapy_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
-        therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
-        return therapy_label, therapy_text
+
+        def done_choose_therapy():
+            therapy_text.place(x=WIDGETS_X, y=THERAPY_Y + 40, anchor="ne")
+
+        therapy_done_button = Button(self.__canvas, width=3, text="تم", command=done_choose_therapy)
+        therapy_done_button.place(x=WIDGETS_X - 350, y=THERAPY_Y + 5, anchor="ne")
+
+        self.__therapys[therapy_num.get()] = (therapy_label, therapy_text, therapy_date, date_value, therapy_done_button,
+                                              therapy_options)
+
+        return therapy_label, therapy_text, therapy_num, therapy_date, date_value
 
     def create_all(self):
         """
@@ -460,13 +497,21 @@ class GUI:
         phone_label, phone_entry, phone_value = self.create_phone()
         description_label, description_text = self.create_description()
         diagnosis_label, diagnosis_text = self.create_diagnosis()
-        therapy_label, therapy_text = self.create_therapy()
+
+        # def add_therapy():
+        #     create_therapy()
+        #     add_therapy_button.destroy()
+        #
+        # add_therapy_button = Button(self.__canvas, text="إضافة علاج", command=add_therapy)
+        # add_therapy_button.place(x=WIDGETS_X, y=THERAPY_Y + 100)
+
+        therapy_label, therapy_text, therapy_num, therapy_date_entry, therapy_date_value = self.create_therapy()
 
         id_flag, age_flag, child_flag, phone_flag = False, False, False, False
         id_err_label, age_err_label, child_err_label, phone_err_label = None, None, None, None
 
         def save_button_func():
-            print(GUI.after_search)
+            # print(GUI.after_search)
             name = name_value.get()
             # check
             id_number = id_value.get()
@@ -546,7 +591,7 @@ class GUI:
 
             if not phone_flag and not id_flag and not child_flag and not age_flag:
                 patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
-                                    city, phone, description, diagnosis, therapy)
+                                    city, phone, description, diagnosis, therapy, therapy_num.get(), therapy_date_value.get())
 
                 # try:
                 self.__patients.add_patient(patient, GUI.after_search)
@@ -580,7 +625,8 @@ class GUI:
                                       health_label, health_entry, work_label, work_entry, companion_label,
                                       companion_entry, city_label, city_entry, phone_label, phone_entry,
                                       description_label, description_text, diagnosis_label, diagnosis_text,
-                                      therapy_label, therapy_text, save_button, ignore_button, id_err_label,
+                                      therapy_label, therapy_text, therapy_num, therapy_date_entry, therapy_date_value,
+                                      save_button, ignore_button, id_err_label,
                                       age_err_label, phone_err_label, child_err_label, age_err_label, id_err_label]
 
             self.fill_dict(*self.__canvas_content[:-6])
@@ -628,8 +674,8 @@ class GUI:
                   social_label, social_options, social_value, age_label, age_entry, children_label, children_entry,
                   prayer_label, prayer_options, prayer_value, health_label, health_entry, work_label, work_entry,
                   companion_label, companion_entry, city_label, city_entry, phone_label, phone_entry, description_label,
-                  description_text, diagnosis_label, diagnosis_text, therapy_label, therapy_text, save_button,
-                  ignore_button):
+                  description_text, diagnosis_label, diagnosis_text, therapy_label, therapy_text, therapy_num,
+                  therapy_date_entry, therapy_date_value, save_button, ignore_button):
         self.widgets_dict[ALL_NAME] = (name_label, name_entry)
         self.widgets_dict[ID] = (pid_label, pid_entry)
         self.widgets_dict[GENDER] = (gender_label, gender_options, gender_value)
@@ -644,7 +690,7 @@ class GUI:
         self.widgets_dict[PHONE] = (phone_label, phone_entry)
         self.widgets_dict[DESCRIPTION] = (description_label, description_text)
         self.widgets_dict[DIAGNOSIS] = (diagnosis_label, diagnosis_text)
-        self.widgets_dict[THERAPY] = (therapy_label, therapy_text)
+        self.widgets_dict[THERAPY] = (therapy_label, therapy_text, therapy_num, therapy_date_entry, therapy_date_value)
         self.widgets_dict[SAVE] = save_button
         self.widgets_dict[IGNORE] = ignore_button
 

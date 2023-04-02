@@ -28,9 +28,41 @@ class GUI:
         self.__root = Tk()
         self.__width = self.__root.winfo_screenwidth()
         self.__height = self.__root.winfo_screenheight()
-        self.__canvas = Canvas(self.__root, width=self.__width, height=self.__height, bd=10, bg="white")
-        self.__canvas.place(x=0, y=0)
+
+        # create a main frame
+        self.__main_frame = Frame(self.__root, width=1000, height=700)
+        self.__main_frame.grid(row=0, column=0, sticky="NSEW")
+        # self.__main_frame.pack(fill=BOTH, expand=1)
+
+        self.__canvas = Canvas(self.__main_frame, bd=10, bg="white", width=1000, height=700)
+        # self.__canvas.place(x=0, y=0)
+        # self.__canvas.pack(side=RIGHT, expand=1, fill=BOTH)
+        self.__canvas.grid(row=0, column=0, sticky="NSEW")#, padx=(0, 10))
+
+        self.__scrollbar = ttk.Scrollbar(self.__main_frame, orient=VERTICAL, command=self.__canvas.yview)
+        # self.__scrollbar.pack(side=LEFT, fill=Y)
+        self.__scrollbar.grid(row=0, column=0, sticky="W")#, padx=(10, 0))
+        # self.__scrollbar.place(x=10, y=200, height=40)
+        # self.__canvas.create_window((0, 0), window=self.__all_frame, anchor="nw")
+
+        # self.__canvas.config(yscrollcommand=self.__scrollbar.set)
+        self.__canvas.configure(yscrollcommand=self.__scrollbar.set)#, scrollregion=self.__canvas.bbox("all"))
+        self.__canvas.bind('<Configure>', lambda e: self.__canvas.configure(scrollregion=self.__canvas.bbox("all")))
+
+        self.__inner_frame = Frame(self.__canvas, width=1000, height=700)
+
+        self.__canvas.create_window((0, 0), window=self.__inner_frame, anchor="nw")
+
+
+
+        # self.__frame = Frame(self.__all_frame)
+        # self.__frame.pack()
+        #
+        # self.__scrollbar.config(command=self.__canvas.yview)
+        # self.__canvas.place(x=0, y=0)
+
         self.__canvas_content = []
+        self.__therapys = {}
         self.__patients = p.Patients()
         self.widgets = []
         self.options_values = []
@@ -51,6 +83,7 @@ class GUI:
         subject = Label(self.__root, text=SUBJECT, font=("Traditional Arabic", 20), bg="white")
         subject.place(x=self.__width // 2 - 10, y=63)
         self.starting_buttons()
+
         self.__root.mainloop()
 
     def starting_buttons(self):
@@ -62,8 +95,10 @@ class GUI:
         self.__canvas.create_line(1313, 120, 1313, 600)
         self.__canvas.create_line(1313, 600, self.__width, 600)
 
-        search_button = Button(self.__root, text="إبحث عن مريض", font=("Times", 20), command=self.__search_button_func)
-        search_button.place(x=self.__width, y=150, anchor="e")
+        search_button = Button(self.__inner_frame, text="إبحث عن مريض", font=("Times", 20), command=self.__search_button_func)
+        # search_button.place(x=self.__width, y=150, anchor="e")
+        # search_button.pack()
+        search_button.grid(row=1, column=10)
         add_new_button = Button(self.__root, text="إضافة مريض جديد", font=("Times", 20),
                                 command=self.add_new_patient_button_func)
         add_new_button.place(x=self.__width, y=250, anchor="e")
@@ -260,12 +295,12 @@ class GUI:
         This function create the label and entry for the name input
         :return: name's label, entry and value
         """
-        name_value = StringVar(self.__canvas)
-        name_label = Label(self.__canvas, text=":" + ALL_NAME, font=("Times", 20), bg="white")
-        name_label.place(x=LABELS_X, y=NAME_Y, anchor="w")
-        name_entry = Entry(self.__canvas, textvariable=name_value, width=15, font=("Times", 15), justify="right",
+        name_value = StringVar(self.__inner_frame)
+        name_label = Label(self.__inner_frame, text=":" + ALL_NAME, font=("Times", 20), bg="white")
+        # name_label.place(x=LABELS_X, y=NAME_Y, anchor="w")
+        name_entry = Entry(self.__inner_frame, textvariable=name_value, width=15, font=("Times", 15), justify="right",
                            highlightthickness=5)
-        name_entry.place(x=WIDGETS_X, y=NAME_Y, anchor="e")
+        # name_entry.place(x=WIDGETS_X, y=NAME_Y, anchor="e")
 
         return name_label, name_entry, name_value
 
@@ -274,12 +309,12 @@ class GUI:
         This function create the label and entry for the id number input
         :return: id's label, entry and value
         """
-        id_value = StringVar(self.__canvas)
-        pid_label = Label(self.__canvas, text=ID, font=("Times", 20), bg="white")
-        pid_label.place(x=ID_LBL_X, y=ID_Y, anchor="w")
-        pid_entry = Entry(self.__canvas, textvariable=id_value, width=10, font=("Times", 15), highlightthickness=5,
+        id_value = StringVar(self.__inner_frame)
+        pid_label = Label(self.__inner_frame, text=ID, font=("Times", 20), bg="white")
+        # pid_label.place(x=ID_LBL_X, y=ID_Y, anchor="w")
+        pid_entry = Entry(self.__inner_frame, textvariable=id_value, width=10, font=("Times", 15), highlightthickness=5,
                           justify="right")
-        pid_entry.place(x=ID_WDG_X, y=ID_Y, anchor="e")
+        # pid_entry.place(x=ID_WDG_X, y=ID_Y, anchor="e")
         return pid_label, pid_entry, id_value
 
     def create_gender(self):
@@ -287,11 +322,11 @@ class GUI:
         This function create the label and option menu for the gender input
         :return: gender's label, option menu and value
         """
-        gender_value = StringVar(self.__canvas)
-        gender_label = Label(self.__canvas, text=GENDER, font=("Times", 20), bg="white")
-        gender_label.place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
-        gender_options = OptionMenu(self.__canvas, gender_value, *GENDERS)
-        gender_options.place(x=GENDER_WDG_X, y=GENDER_Y, anchor="e")
+        gender_value = StringVar(self.__inner_frame)
+        gender_label = Label(self.__inner_frame, text=GENDER, font=("Times", 20), bg="white")
+        # gender_label.place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
+        gender_options = OptionMenu(self.__inner_frame, gender_value, *GENDERS)
+        # gender_options.place(x=GENDER_WDG_X, y=GENDER_Y, anchor="e")
         return gender_label, gender_options, gender_value
 
     def create_social(self):
@@ -299,11 +334,11 @@ class GUI:
         This function create the label and option menu for the social situation input
         :return: social situation's label, entry and value
         """
-        social_value = StringVar(self.__canvas)
-        social_label = Label(self.__canvas, text=SOCIAL, font=("Times", 20), bg="white")
-        social_label.place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
-        social_options = OptionMenu(self.__canvas, social_value, *SOCIALS)
-        social_options.place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
+        social_value = StringVar(self.__inner_frame)
+        social_label = Label(self.__inner_frame, text=SOCIAL, font=("Times", 20), bg="white")
+        # social_label.place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
+        social_options = OptionMenu(self.__inner_frame, social_value, *SOCIALS)
+        # social_options.place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
         return social_label, social_options, social_value
 
     def create_age(self):
@@ -311,11 +346,11 @@ class GUI:
         This function create the label and entry for the age input
         :return: age's label, entry and value
         """
-        age_value = StringVar(self.__canvas)
-        age_label = Label(self.__canvas, text=AGE, font=("Times", 20), bg="white")
-        age_label.place(x=AGE_LBL_X, y=AGE_Y, anchor="w")
-        age_entry = Entry(self.__canvas, textvariable=age_value, width=3, font=("Times", 15), highlightthickness=5)
-        age_entry.place(x=AGE_WDG_X, y=AGE_Y, anchor="e")
+        age_value = StringVar(self.__inner_frame)
+        age_label = Label(self.__inner_frame, text=AGE, font=("Times", 20), bg="white")
+        # age_label.place(x=AGE_LBL_X, y=AGE_Y, anchor="w")
+        age_entry = Entry(self.__inner_frame, textvariable=age_value, width=3, font=("Times", 15), highlightthickness=5)
+        # age_entry.place(x=AGE_WDG_X, y=AGE_Y, anchor="e")
         return age_label, age_entry, age_value
 
     def create_children(self):
@@ -323,12 +358,12 @@ class GUI:
         This function create the label and entry for the children input
         :return: children's label, entry and value
         """
-        children_value = StringVar(self.__canvas)
-        children_label = Label(self.__canvas, text=CHILDREN, font=("Times", 20), bg="white")
-        children_label.place(x=CHILDREN_LBL_X, y=CHILDREN_Y, anchor="w")
-        children_entry = Entry(self.__canvas, textvariable=children_value, width=3, font=("Times", 15),
+        children_value = StringVar(self.__inner_frame)
+        children_label = Label(self.__inner_frame, text=CHILDREN, font=("Times", 20), bg="white")
+        # children_label.place(x=CHILDREN_LBL_X, y=CHILDREN_Y, anchor="w")
+        children_entry = Entry(self.__inner_frame, textvariable=children_value, width=3, font=("Times", 15),
                                highlightthickness=5)
-        children_entry.place(x=CHILDREN_WDG_X, y=CHILDREN_Y, anchor="e")
+        # children_entry.place(x=CHILDREN_WDG_X, y=CHILDREN_Y, anchor="e")
         return children_label, children_entry, children_value
 
     def create_prayer(self):
@@ -336,11 +371,11 @@ class GUI:
         This function create the label and entry for the prayer input
         :return: prayer's label, option menu and value
         """
-        prayer_value = StringVar(self.__canvas)
-        prayer_label = Label(self.__canvas, text=PRAYER, font=("Times", 20), bg="white")
-        prayer_label.place(x=PRAYER_LBL_X, y=PRAYER_Y, anchor="w")
-        prayer_options = OptionMenu(self.__canvas, prayer_value, *["نعم", "لا"])
-        prayer_options.place(x=PRAYER_WDG_X, y=PRAYER_Y, anchor="e")
+        prayer_value = StringVar(self.__inner_frame)
+        prayer_label = Label(self.__inner_frame, text=PRAYER, font=("Times", 20), bg="white")
+        # prayer_label.place(x=PRAYER_LBL_X, y=PRAYER_Y, anchor="w")
+        prayer_options = OptionMenu(self.__inner_frame, prayer_value, *["نعم", "لا"])
+        # prayer_options.place(x=PRAYER_WDG_X, y=PRAYER_Y, anchor="e")
         return prayer_label, prayer_options, prayer_value
 
     def create_health(self):
@@ -348,12 +383,12 @@ class GUI:
         This function create the label and entry for the health input
         :return: health's label, entry and value
         """
-        health_value = StringVar(self.__canvas)
-        health_label = Label(self.__canvas, text=HEALTH, font=("Times", 20), bg="white")
-        health_label.place(x=LABELS_X, y=HEALTH_Y, anchor="w")
-        health_entry = Entry(self.__canvas, textvariable=health_value, width=20, font=("Times", 15),
+        health_value = StringVar(self.__inner_frame)
+        health_label = Label(self.__inner_frame, text=HEALTH, font=("Times", 20), bg="white")
+        # health_label.place(x=LABELS_X, y=HEALTH_Y, anchor="w")
+        health_entry = Entry(self.__inner_frame, textvariable=health_value, width=20, font=("Times", 15),
                              highlightthickness=5, justify="right")
-        health_entry.place(x=WIDGETS_X, y=HEALTH_Y, anchor="e")
+        # health_entry.place(x=WIDGETS_X, y=HEALTH_Y, anchor="e")
         return health_label, health_entry, health_value
 
     def create_work(self):
@@ -361,12 +396,12 @@ class GUI:
         This function create the label and entry for the work input
         :return: work's label, entry and value
         """
-        work_value = StringVar(self.__canvas)
-        work_label = Label(self.__canvas, text=WORK, font=("Times", 20), bg="white")
-        work_label.place(x=WORK_LBL_X, y=WORK_Y, anchor="w")
-        work_entry = Entry(self.__canvas, textvariable=work_value, width=20, font=("Times", 15),
+        work_value = StringVar(self.__inner_frame)
+        work_label = Label(self.__inner_frame, text=WORK, font=("Times", 20), bg="white")
+        # work_label.place(x=WORK_LBL_X, y=WORK_Y, anchor="w")
+        work_entry = Entry(self.__inner_frame, textvariable=work_value, width=20, font=("Times", 15),
                            highlightthickness=5, justify="right")
-        work_entry.place(x=WORK_WDG_X, y=WORK_Y, anchor="e")
+        # work_entry.place(x=WORK_WDG_X, y=WORK_Y, anchor="e")
         return work_label, work_entry, work_value
 
     def create_companion(self):
@@ -374,12 +409,12 @@ class GUI:
         This function create the label and entry for the companion input
         :return: companion's label, entry and value
         """
-        companion_value = StringVar(self.__canvas)
-        companion_label = Label(self.__canvas, text=COMPANION, font=("Times", 20), bg="white")
-        companion_label.place(x=COMPANION_LBL_X, y=COMPANION_Y, anchor="w")
-        companion_entry = Entry(self.__canvas, textvariable=companion_value, width=20, font=("Times", 15),
+        companion_value = StringVar(self.__inner_frame)
+        companion_label = Label(self.__inner_frame, text=COMPANION, font=("Times", 20), bg="white")
+        # companion_label.place(x=COMPANION_LBL_X, y=COMPANION_Y, anchor="w")
+        companion_entry = Entry(self.__inner_frame, textvariable=companion_value, width=20, font=("Times", 15),
                                 highlightthickness=5, justify="right")
-        companion_entry.place(x=COMPANION_WDG_X, y=COMPANION_Y, anchor="e")
+        # companion_entry.place(x=COMPANION_WDG_X, y=COMPANION_Y, anchor="e")
         return companion_label, companion_entry, companion_value
 
     def create_city(self):
@@ -387,12 +422,12 @@ class GUI:
         This function create the label and entry for the city input
         :return: city's label, entry and value
         """
-        city_value = StringVar(self.__canvas)
-        city_label = Label(self.__canvas, text=CITY, font=("Times", 20), bg="white")
-        city_label.place(x=CITY_LBL_X, y=CITY_Y, anchor="w")
-        city_entry = Entry(self.__canvas, textvariable=city_value, width=20, font=("Times", 15),
+        city_value = StringVar(self.__inner_frame)
+        city_label = Label(self.__inner_frame, text=CITY, font=("Times", 20), bg="white")
+        # city_label.place(x=CITY_LBL_X, y=CITY_Y, anchor="w")
+        city_entry = Entry(self.__inner_frame, textvariable=city_value, width=20, font=("Times", 15),
                            highlightthickness=5, justify="right")
-        city_entry.place(x=CITY_WDG_X, y=CITY_Y, anchor="e")
+        # city_entry.place(x=CITY_WDG_X, y=CITY_Y, anchor="e")
         return city_label, city_entry, city_value
 
     def create_phone(self):
@@ -400,12 +435,12 @@ class GUI:
         This function create the label and entry for the phone number input
         :return: phone number's label, entry and value
         """
-        phone_value = StringVar(self.__canvas)
-        phone_label = Label(self.__canvas, text=PHONE, font=("Times", 20), bg="white")
-        phone_label.place(x=PHONE_LBL_X, y=PHONE_Y, anchor="w")
-        phone_entry = Entry(self.__canvas, textvariable=phone_value, width=20, font=("Times", 15),
+        phone_value = StringVar(self.__inner_frame)
+        phone_label = Label(self.__inner_frame, text=PHONE, font=("Times", 20), bg="white")
+        # phone_label.place(x=PHONE_LBL_X, y=PHONE_Y, anchor="w")
+        phone_entry = Entry(self.__inner_frame, textvariable=phone_value, width=20, font=("Times", 15),
                             highlightthickness=5, justify="right")
-        phone_entry.place(x=PHONE_WDG_X, y=PHONE_Y, anchor="e")
+        # phone_entry.place(x=PHONE_WDG_X, y=PHONE_Y, anchor="e")
         return phone_label, phone_entry, phone_value
 
     def create_description(self):
@@ -413,10 +448,10 @@ class GUI:
         This function create the label and entry for the description input
         :return: description's label and text
         """
-        description_label = Label(self.__canvas, text=DESCRIPTION, font=("jameel noori nastaleeq", 20), bg="white")
-        description_label.place(x=LABELS_X, y=DESCRIPTION_Y - 30, anchor="w")
-        description_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
-        description_text.place(x=WIDGETS_X, y=DESCRIPTION_Y, anchor="e")
+        description_label = Label(self.__inner_frame, text=DESCRIPTION, font=("jameel noori nastaleeq", 20), bg="white")
+        # description_label.place(x=LABELS_X, y=DESCRIPTION_Y - 30, anchor="w")
+        description_text = ScrolledText(self.__inner_frame, height=4, width=86, font=("Times", 15), highlightthickness=5)
+        # description_text.place(x=WIDGETS_X, y=DESCRIPTION_Y, anchor="e")
         return description_label, description_text
 
     def create_diagnosis(self):
@@ -424,22 +459,51 @@ class GUI:
         This function create the label and entry for the diagnosis input
         :return: diagnosis's label and text
         """
-        diagnosis_label = Label(self.__canvas, text=DIAGNOSIS, font=("Times", 20), bg="white")
-        diagnosis_label.place(x=LABELS_X, y=DIAGNOSIS_Y + 15, anchor="w")
-        diagnosis_text = ScrolledText(self.__canvas, height=2, width=86, font=("Times", 15), highlightthickness=5)
-        diagnosis_text.place(x=WIDGETS_X, y=DIAGNOSIS_Y, anchor="ne")
+        diagnosis_label = Label(self.__inner_frame, text=DIAGNOSIS, font=("Times", 20), bg="white")
+        # diagnosis_label.place(x=LABELS_X, y=DIAGNOSIS_Y + 15, anchor="w")
+        diagnosis_text = ScrolledText(self.__inner_frame, height=2, width=86, font=("Times", 15), highlightthickness=5)
+        # diagnosis_text.place(x=WIDGETS_X, y=DIAGNOSIS_Y, anchor="ne")
         return diagnosis_label, diagnosis_text
 
-    def create_therapy(self):
+    def create_therapy(self, therapy_num):
         """
         This function create the label and entry for the therapy input
         :return: therapy's label and text
         """
-        therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
-        therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
-        therapy_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
-        therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
-        return therapy_label, therapy_text
+        # therapy_num = StringVar(self.__inner_frame, value="---")
+        therapy_label = Label(self.__inner_frame, text=THERAPY + f" {THERAPYS_NUMS[therapy_num - 1]}", font=("Times", 20), bg="white")
+        # therapy_label.place(x=LABELS_X, y=THERAPY_Y + 15 + (therapy_num - 1) * 150, anchor="w")
+        therapy_label.grid(row=therapy_num, column=5, sticky="NE")
+
+        therapy_date_lbl = Label(self.__inner_frame, text=f":تاريخ العلاج {THERAPYS_NUMS[therapy_num - 1]}", font=("Times", 20), bg="white")
+        # therapy_date_lbl.place(x=LABELS_X - 400, y=THERAPY_Y + (therapy_num - 1) * 150)
+        therapy_date_lbl.grid(row=therapy_num, column=3, sticky="NE")
+
+        # therapy_options = OptionMenu(self.__inner_frame, therapy_num, *THERAPYS_NUMS)
+        # therapy_options.place(x=WIDGETS_X, y=THERAPY_Y + 4 + (therapy_num - 1) * 150, anchor="ne")
+
+        # def date_picker():
+        #     pass
+        #
+        # therapy_choose_date = Button(self.__inner_frame, text="اختر التاريخ", command=date_picker)
+        # therapy_choose_date.place(x=WIDGETS_X - 70, y=THERAPY_Y, anchor="ne")
+
+        date_value = StringVar(self.__inner_frame)
+        therapy_date = Entry(self.__inner_frame, textvariable=date_value, width=20, font=("Times", 15),
+                             highlightthickness=5, justify="right")
+        # therapy_date.place(x=WIDGETS_X - 400, y=THERAPY_Y + (therapy_num - 1) * 150, anchor="ne")
+        therapy_date.grid(row=therapy_num, column=4, sticky="NE")
+
+        therapy_text = ScrolledText(self.__inner_frame, height=4, width=86, font=("Times", 15), highlightthickness=5)
+        # therapy_text.place(x=WIDGETS_X, y=THERAPY_Y + 40 + (therapy_num - 1) * 150, anchor="ne")
+        therapy_text.grid(row=therapy_num, column=5)
+        # therapy_text.pack()
+        # therapy_done_button = Button(self.__inner_frame, width=3, text="تم")
+        # therapy_done_button.place(x=WIDGETS_X - 350, y=THERAPY_Y + 5, anchor="ne")
+
+        self.__therapys[therapy_num] = (therapy_label, therapy_date_lbl, date_value, therapy_date, therapy_text)
+
+        # return therapy_label, therapy_text, therapy_num, therapy_date, date_value
 
     def create_all(self):
         """
@@ -460,13 +524,20 @@ class GUI:
         phone_label, phone_entry, phone_value = self.create_phone()
         description_label, description_text = self.create_description()
         diagnosis_label, diagnosis_text = self.create_diagnosis()
-        therapy_label, therapy_text = self.create_therapy()
+
+        for i in range(1, 9):
+            self.create_therapy(i)
+
+        # self.__canvas.update_idletasks()
+        # self.__canvas.configure(scrollregion=self.__canvas.bbox("all"))
+
+        # therapy_label, therapy_text, therapy_num, therapy_date_entry, date_value = self.create_therapy()
 
         id_flag, age_flag, child_flag, phone_flag = False, False, False, False
         id_err_label, age_err_label, child_err_label, phone_err_label = None, None, None, None
 
         def save_button_func():
-            print(GUI.after_search)
+            # print(GUI.after_search)
             name = name_value.get()
             # check
             id_number = id_value.get()
@@ -580,13 +651,13 @@ class GUI:
                                       health_label, health_entry, work_label, work_entry, companion_label,
                                       companion_entry, city_label, city_entry, phone_label, phone_entry,
                                       description_label, description_text, diagnosis_label, diagnosis_text,
-                                      therapy_label, therapy_text, save_button, ignore_button, id_err_label,
+                                      save_button, ignore_button, id_err_label, #therapy_label, therapy_text,
                                       age_err_label, phone_err_label, child_err_label, age_err_label, id_err_label]
 
-            self.fill_dict(*self.__canvas_content[:-6])
+            self.fill_dict(*self.__canvas_content[:-4])
 
             self.widgets += [name_entry, pid_entry, age_entry, children_entry, health_entry, work_entry,
-                             companion_entry, city_entry, phone_entry, description_text, diagnosis_text, therapy_text]
+                             companion_entry, city_entry, phone_entry, description_text, diagnosis_text]#, therapy_text]
 
             self.options_values += [gender_value, social_value, prayer_value]
 
@@ -687,6 +758,9 @@ class GUI:
 
         self.widgets_dict[SAVE].place(x=SAVE_X, y=SAVE_Y, anchor="w")
         self.widgets_dict[IGNORE].place(x=IGNORE_X, y=IGNORE_Y, anchor="w")
+
+        # self.__canvas.update_idletasks()
+        # self.__canvas.configure(scrollregion=self.__canvas.bbox("all"))
 
     def delete_patient_button_func(self):
         pass
