@@ -6,6 +6,7 @@ from Constants import *
 import tkinter.ttk as ttk
 from tkinter.scrolledtext import ScrolledText
 from tkinter import messagebox
+import GDriveConnect
 
 
 class GUI:
@@ -58,18 +59,27 @@ class GUI:
         This function starts the starting buttons (add, search)
         :return: Nothing
         """
-        self.__canvas.create_line(1313, 120, self.__width, 120)
-        self.__canvas.create_line(1313, 120, 1313, 600)
-        self.__canvas.create_line(1313, 600, self.__width, 600)
+        self.__canvas.create_line(1263, 120, self.__width, 120)
+        self.__canvas.create_line(1263, 120, 1263, 600)
+        self.__canvas.create_line(1263, 600, self.__width, 600)
 
         search_button = Button(self.__root, text="إبحث عن مريض", font=("Times", 20), command=self.__search_button_func)
         search_button.place(x=self.__width, y=150, anchor="e")
         add_new_button = Button(self.__root, text="إضافة مريض جديد", font=("Times", 20),
                                 command=self.add_new_patient_button_func)
         add_new_button.place(x=self.__width, y=250, anchor="e")
+
+        save_to_drive_button = Button(self.__root, text="حفظ لجوجل درايف", font=("Times", 20), command=GDriveConnect.save_func)
+        save_to_drive_button.place(x=self.__width, y=350, anchor="e")
+
+        load_from_drive_button = Button(self.__root, text="إستعادة من جوجل درايف", font=("Times", 20),
+                                      command=GDriveConnect.load_func)
+        load_from_drive_button.place(x=self.__width, y=450, anchor="e")
+
         # remove_button = Button(self.__root, text="حذف مريض", font=("Times", 20),
         #                        command=self.delete_patient_button_func)
         # remove_button.place(x=self.__width, y=350, anchor="e")
+
         # update_button = Button(self.__root, text="تعديل معلومات مريض", font=("Times", 20),
         #                        command=self.update_patient_button_func)
         # update_button.place(x=self.__width, y=450, anchor="e")

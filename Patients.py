@@ -228,3 +228,4 @@ class Patients:
                 return -1, NAME_NOT_EXISTS
 
         return to_return
+
