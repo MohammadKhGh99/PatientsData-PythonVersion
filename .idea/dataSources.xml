@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="identifier.sqlite" uuid="799d5678-a648-4aa6-bca7-7ce930b1a50e">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:identifier.sqlite</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="EXTERNAL_DATA_PATH" value="D:\Mine\PatientsData\.idea\external-data.xml" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

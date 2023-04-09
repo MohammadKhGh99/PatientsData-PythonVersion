@@ -7,6 +7,7 @@ import tkinter.ttk as ttk
 from tkinter.scrolledtext import ScrolledText
 from tkinter import messagebox
 import GDriveConnect
+from convert_db_to import do_backup_xlsx
 
 
 class GUI:
@@ -38,6 +39,41 @@ class GUI:
         self.widgets_dict = dict()
         self.search_content = []
         self.search_dict = dict()
+
+    # def rtlRelease(self, event):
+    #     global hebCursorPos
+    #     if event.keycode == 114 or event.keycode == 113:
+    #         hebCursorPos = event.widget.index(INSERT)
+    #         print("Hello")
+    #
+    #     else:
+    #         # print(hebCursorPos)
+    #         hebCursorPos = int(float(hebCursorPos))
+    #         event.widget.mark_set("insert", "1.0+%d chars" % hebCursorPos)
+    #         # event.widget.icursor(hebCursorPos)
+    #     print(str(event.keycode) + " " + str(hebCursorPos))
+    #
+    # def rtlPress(self, event):
+    #     global hebCursorPos
+    #     if event.keycode == 22:
+    #         length = len(event.widget.get())
+    #         if hebCursorPos == length:
+    #             event.widget.insert(hebCursorPos, " ")
+    #         index = hebCursor + 1 #len(event.widget.get(0)) + 1
+    #         event.widget.mark_set("insert", "1.0+%d chars" % index)
+    #         # event.widget.icursor(hebCursorPos + 1)
+    #     else:
+    #         if event.keycode == 119:
+    #             if hebCursorPos == 0:
+    #                 event.widget.insert(hebCursorPos, " ")
+    #             else:
+    #                 hebCursorPos -= 1
+    #             event.widget.icursor(hebCursorPos)
+    #
+    # def rtlMouse(self, event):
+    #     global hebCursorPos
+    #     hebCursorPos = event.widget.index(INSERT)
+
 
     def starting_the_window(self):
         """
@@ -71,7 +107,7 @@ class GUI:
 
         save_to_drive_button = Button(self.__root, text="حفظ لجوجل درايف", font=("Times", 20), command=GDriveConnect.save_func)
         save_to_drive_button.place(x=self.__width, y=350, anchor="e")
-
+        #
         load_from_drive_button = Button(self.__root, text="إستعادة من جوجل درايف", font=("Times", 20),
                                       command=GDriveConnect.load_func)
         load_from_drive_button.place(x=self.__width, y=450, anchor="e")
@@ -94,9 +130,9 @@ class GUI:
         for content in self.__canvas_content:
             if content is None or type(content) is StringVar:
                 continue
-            if type(content) is ScrolledText:
+            if type(content) is Text:
                 content.delete('1.0', END)
-                content.frame.place_forget()
+                content.place_forget()
             elif type(content) is Entry:
                 content.delete(0, END)
                 content.place_forget()
@@ -107,9 +143,9 @@ class GUI:
         for content in self.search_content:
             if content is None:
                 continue
-            if type(content) is ScrolledText:
+            if type(content) is Text:
                 content.delete('1.0', END)
-                content.frame.place_forget()
+                content.place_forget()
             elif type(content) is Entry:
                 content.delete(0, END)
                 content.place_forget()
@@ -134,7 +170,7 @@ class GUI:
         self.widgets_dict[COMPANION][1].insert(0, our_choice[COMPANION[1:]])
         self.widgets_dict[CITY][1].insert(0, our_choice[CITY[1:]])
         self.widgets_dict[PHONE][1].insert(0, our_choice[PHONE[1:]])
-        self.widgets_dict[DESCRIPTION][1].insert('1.0', our_choice[DESCRIPTION[1:]])
+        self.widgets_dict[DESCRIPTION][1].insert('end', our_choice[DESCRIPTION[1:]], "right")
         self.widgets_dict[DIAGNOSIS][1].insert('1.0', our_choice[DIAGNOSIS[1:]])
         self.widgets_dict[THERAPY][1].insert('1.0', our_choice[THERAPY[1:]])
 
@@ -423,10 +459,14 @@ class GUI:
         This function create the label and entry for the description input
         :return: description's label and text
         """
-        description_label = Label(self.__canvas, text=DESCRIPTION, font=("jameel noori nastaleeq", 20), bg="white")
+        description_label = Label(self.__canvas, text=DESCRIPTION, font=("Times", 20), bg="white")
         description_label.place(x=LABELS_X, y=DESCRIPTION_Y - 30, anchor="w")
-        description_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
-        description_text.place(x=WIDGETS_X, y=DESCRIPTION_Y, anchor="e")
+        description_text = Text(self.__canvas, height=5, width=86, font=("Times", 15), highlightthickness=5, wrap="none")
+        # description_text.tag_configure('tag-right', justify='right')
+        # description_text.bind("<KeyPress>", self.rtlPress)
+        # description_text.bind("<KeyRelease>", self.rtlRelease)
+        # description_text.bind("<ButtonRelease>", self.rtlMouse)
+        description_text.place(x=WIDGETS_X, y=DESCRIPTION_Y + 10, anchor="e")
         return description_label, description_text
 
     def create_diagnosis(self):
@@ -435,9 +475,12 @@ class GUI:
         :return: diagnosis's label and text
         """
         diagnosis_label = Label(self.__canvas, text=DIAGNOSIS, font=("Times", 20), bg="white")
-        diagnosis_label.place(x=LABELS_X, y=DIAGNOSIS_Y + 15, anchor="w")
-        diagnosis_text = ScrolledText(self.__canvas, height=2, width=86, font=("Times", 15), highlightthickness=5)
-        diagnosis_text.place(x=WIDGETS_X, y=DIAGNOSIS_Y, anchor="ne")
+        diagnosis_label.place(x=LABELS_X, y=DIAGNOSIS_Y + 35, anchor="w")
+        diagnosis_text = Text(self.__canvas, height=3, width=86, font=("Times", 15), highlightthickness=5)
+        # diagnosis_text.bind("<KeyPress>", self.rtlPress)
+        # diagnosis_text.bind("<KeyRelease>", self.rtlRelease)
+        # diagnosis_text.bind("<ButtonRelease>", self.rtlMouse)
+        diagnosis_text.place(x=WIDGETS_X, y=DIAGNOSIS_Y + 20, anchor="ne")
         return diagnosis_label, diagnosis_text
 
     def create_therapy(self):
@@ -446,9 +489,12 @@ class GUI:
         :return: therapy's label and text
         """
         therapy_label = Label(self.__canvas, text=THERAPY, font=("Times", 20), bg="white")
-        therapy_label.place(x=LABELS_X, y=THERAPY_Y + 10, anchor="w")
-        therapy_text = ScrolledText(self.__canvas, height=4, width=86, font=("Times", 15), highlightthickness=5)
-        therapy_text.place(x=WIDGETS_X, y=THERAPY_Y, anchor="ne")
+        therapy_label.place(x=LABELS_X, y=THERAPY_Y + 60, anchor="w")
+        therapy_text = Text(self.__canvas, height=8, width=86, font=("Times", 15), highlightthickness=5)
+        # therapy_text.bind("<KeyPress>", self.rtlPress)
+        # therapy_text.bind("<KeyRelease>", self.rtlRelease)
+        # therapy_text.bind("<ButtonRelease>", self.rtlMouse)
+        therapy_text.place(x=WIDGETS_X, y=THERAPY_Y + 40, anchor="ne")
         return therapy_label, therapy_text
 
     def create_all(self):
@@ -476,7 +522,6 @@ class GUI:
         id_err_label, age_err_label, child_err_label, phone_err_label = None, None, None, None
 
         def save_button_func():
-            print(GUI.after_search)
             name = name_value.get()
             # check
             id_number = id_value.get()
@@ -561,13 +606,16 @@ class GUI:
                 # try:
                 self.__patients.add_patient(patient, GUI.after_search)
                 messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
+
+                do_backup_xlsx()
+
                 # except pyodbc.IntegrityError:
                 #     messagebox.showwarning("ّ!موجود", "!لقد أدخلت هذا الإسم مسبقًا")
                 # finally:
                 for widget in self.widgets:
                     if type(widget) is Entry:
                         widget.delete(0, END)
-                    elif type(widget) is ScrolledText:
+                    elif type(widget) is Text:
                         widget.delete('1.0', END)
                 for value in self.options_values:
                     value.set('-')
