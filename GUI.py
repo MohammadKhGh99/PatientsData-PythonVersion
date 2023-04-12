@@ -122,6 +122,9 @@ class GUI:
         quit_button = Button(self.__root, text="الخروج", font=("Times", 20), command=self.quit_button_func)
         quit_button.place(x=self.__width, y=550, anchor="e")
 
+        to_xl_button = Button(self.__root, text="تحويل لملف اكسل", font=("Times", 20), command=lambda : do_backup_xlsx(True))
+        to_xl_button.place(x=self.__width, y=700, anchor="e")
+
     def hide_canvas_content(self):
         """
         This function hide the canvas content and deletes each widget's content

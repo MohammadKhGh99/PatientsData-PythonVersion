@@ -1,6 +1,7 @@
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
 import tkinter.messagebox
+from convert_db_to import do_backup_xlsx
 
 # For using listdir()
 import os
@@ -14,24 +15,52 @@ gauth = GoogleAuth()
 gauth.LocalWebserverAuth()
 drive = GoogleDrive(gauth)
 
+# searching for the root folder to save to
+file_name = "المعالجة بالرقية الشرعية"
+query = f"title = '{file_name}'"
+root_list_check = drive.ListFile({'q': query}).GetList()
+
+# Check if the file exists
+if root_list_check:
+    root_folder = root_list_check[0]
+else:
+    body = {'title': "المعالجة بالرقية الشرعية", 'mimeType': "application/vnd.google-apps.folder"}
+    root_folder = drive.CreateFile(body)
+    root_folder.Upload()
+
+# found = False
+# print(len(drive.ListFile().GetList()))
+# for file1 in drive.ListFile().GetList():
+#     if file1['title'] == "المعالجة بالرقية الشرعية":
+#         root_folder = file1
+#         found = True
+#         break
+#
+# # if it is not existing then make one!
+# if not found:
+#     body = {'title': "المعالجة بالرقية الشرعية", 'mimeType': "application/vnd.google-apps.folder"}
+#     root_folder = drive.CreateFile(body)
+#     root_folder.Upload()
+
 # replace the value of this variable
 # with the absolute path of the directory
 db_path = r"Patient.db"
 xlsx_path = r"BackUp.xlsx"
 
 def save_func():
+    do_backup_xlsx()
     try:
-        file_list = drive.ListFile(
-            {'q': "'{}' in parents and trashed=false".format('1Jis1dontLnCDRjCYRy5isMPZZlHLG62J')}).GetList()
-        for file in file_list:
+        root_list = drive.ListFile({'q': f"'{root_folder['id']}' in parents and trashed=false"}).GetList()
+        for file in root_list:
             if file['title'] == xlsx_path:
                 file.Delete()
             if file['title'] == db_path:
                 file.Delete()
         # iterating thought all the files/folder
         # of the desired directory
+
         for x in [db_path, xlsx_path]:
-            f = drive.CreateFile({'parents': [{'id': '1Jis1dontLnCDRjCYRy5isMPZZlHLG62J'}]})
+            f = drive.CreateFile({'parents': [{'id': f"{root_folder['id']}"}]})
             f.SetContentFile(x)
             f.Upload()
 
@@ -46,12 +75,11 @@ def save_func():
     except Exception as e:
         tkinter.messagebox.showerror("فشل", "فشل الحفظ إلى جوجل درايف!")
 
+
 def load_func():
     try:
-        file_list = drive.ListFile(
-            {'q': "'{}' in parents and trashed=false".format('1Jis1dontLnCDRjCYRy5isMPZZlHLG62J')}).GetList()
-        for file in file_list:
-            # print(file)
+        root_list = drive.ListFile({'q': f"'{root_folder['id']}' in parents and trashed=false"}).GetList()
+        for file in root_list:
             file.GetContentFile(fr"BackUp\{file['title']}")
         tkinter.messagebox.showinfo("نجاح", "تم إستعادة الملفات بنجاح!")
     except Exception as e:

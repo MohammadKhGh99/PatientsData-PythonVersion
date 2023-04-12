@@ -18,7 +18,7 @@ sheet = book.active
 cursor.execute("SELECT * FROM Patient")
 results = cursor.fetchall()
 
-def do_backup_xlsx():
+def do_backup_xlsx(msg=False):
     try:
         j = 1
         for c in ALL_DATA:
@@ -40,5 +40,8 @@ def do_backup_xlsx():
         # (D) SAVE EXCEL FILE & CLOSE DB
         book.save("BackUp.xlsx")
         conn.close()
+        if msg:
+            tkinter.messagebox.showinfo("نجاح", "تم التحويل بنجاح!")
     except Exception as e:
         tkinter.messagebox.showerror("فشل", "فشل\n" + str(e))
+
