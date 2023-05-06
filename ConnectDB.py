@@ -1,5 +1,4 @@
 import sqlite3
-import pandas as pd
 
 # create a database
 connection = sqlite3.connect("Patient.db")

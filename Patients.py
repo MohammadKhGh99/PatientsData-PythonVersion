@@ -1,4 +1,7 @@
 # started at 22.08.2021 at 17:17
+import tkinter.messagebox
+
+import GUI
 from Constants import *
 import os
 import csv
@@ -33,71 +36,9 @@ folder_name = "علاج"
 csv_file = "patients.csv"
 this_dir = os.path.join(os.path.abspath(os.curdir), folder_name)
 
-# DRIVER = "SQL Server"
-# SERVER_NAME = "MOHAMMADGH-PC\\SQLEXPRESS"
-# DATABASE_NAME = "Patients"
-# CONNECTION = f'DRIVER={DRIVER};' \
-#              f'SERVER={SERVER_NAME};' \
-#              f'DATABASE={DATABASE_NAME};' \
-#              f'Trusted_Connection=yes;'
-
 
 class Patients:
-    # def __init__(self):
-        # self.__sql_create_table = """
-        # create table Patient(
-        #     fullname nvarchar(45) unique,
-        #     firstname nvarchar(15),
-        #     middlename nvarchar(15),
-        #     lastname nvarchar(15),
-        #     id_number nvarchar(9) primary key,
-        #     gender nvarchar(7),
-        #     social nvarchar(15),
-        #     age nvarchar(3),
-        #     children nvarchar(3),
-        #     prayer nvarchar(5),
-        #     health nvarchar(30),
-        #     work nvarchar(30),
-        #     companion nvarchar(30),
-        #     city nvarchar(20),
-        #     phone nvarchar(12),
-        #     description nvarchar(200),
-        #     diagnosis nvarchar(100),
-        #     therapy nvarchar(400)
-        # )
-        # """
-
-        # if not os.path.exists(folder_name):
-        #     os.mkdir(folder_name)
-        #
-        # self.patients = list()
-        #
-        # if not os.path.exists(os.path.join(this_dir, csv_file)):
-        #     with open(os.path.join(this_dir, csv_file), 'w', encoding="utf-8-sig", newline='\n') as f:
-        #         csv.writer(f).writerow(ALL_DATA)
-
-        # self.connection_settings = 'driver={SQL Server};server=MOHAMMADGH-PC\\SQLEXPRESS;port=1433;uid=m7md;pwd=12345;'
-        # 'DRIVER={SQL Server};' +
-        # r'SERVER=MOHAMMADGH-PC\SQLEXPRESS;'
-        # 'DATABASE=Patients;'
-        # 'UID=mkhgh;'
-        # 'PWD=1234;'
-        # 'Trusted_Connection=yes;')
-        # 'DRIVER={ODBC Driver 17 for SQL Server};' +
-        # r'SERVER=.\MOHAMMADGH-PC\SQLEXPRESS;'
-        # 'DATABASE=Patients;'
-        # # 'Port=1433'
-        # 'UID=mkhgh;'
-        # 'PWD=1234;'
-        # 'Trusted_Connection=yes;')
-
     def add_patient(self, patient: Patient, after_search):
-
-        # pyodbc.connect(
-        #     "DRIVER={SQL Server Native Client 11.0};SERVER=MOHAMMADGH-PC;DATABASE=Patients;UID=m7md;PWD=12345") as connection
-        # with pymssql.connect(r"MOHAMMADGH-PC\SQLEXPRESS", "m7md", "12345", "Patients") as connection:
-        # with pyodbc.connect(driver="{SQL Server Native Client 11.0}", host="MOHAMMADGH-PC", database="Patients",
-        #                     user="m7md", password="12345") as connection:
         with sqlite3.connect("Patient.db") as connection:
             cursor = connection.cursor()
             # If we want to save the changes on the patient
@@ -106,27 +47,20 @@ class Patients:
                 try:
                     cursor.execute(f"update Patient "
                                    f"set fullname = '{patient.fullname}',"
-                                   f"firstname = '{first}', "
-                                   f"middlename = '{middle}', "
-                                   f"lastname = '{last}', "
-                                   f"id_number = '{patient.id_number}', "
-                                   f"gender = '{patient.gender}', "
-                                   f"social = '{patient.social}', "
-                                   f"age = '{patient.age}', "
-                                   f"children = '{patient.children}', "
-                                   f"prayer = '{patient.prayer}', "
-                                   f"health = '{patient.health}', "
-                                   f"work = '{patient.work}', "
-                                   f"companion = '{patient.companion}', "
-                                   f"city = '{patient.city}', "
-                                   f"phone = '{patient.phone}', "
-                                   f"description = '{patient.description}', "
-                                   f"diagnosis = '{patient.diagnosis}', "
-                                   f"therapy = '{patient.therapy}' "
+                                   f"firstname = '{first}', middlename = '{middle}', lastname = '{last}', "
+                                   f"id_number = '{patient.id_number}', gender = '{patient.gender}', "
+                                   f"social = '{patient.social}', age = '{patient.age}', "
+                                   f"children = '{patient.children}', prayer = '{patient.prayer}', "
+                                   f"health = '{patient.health}', work = '{patient.work}', "
+                                   f"companion = '{patient.companion}', city = '{patient.city}', "
+                                   f"phone = '{patient.phone}', description = '{patient.description}', "
+                                   f"diagnosis = '{patient.diagnosis}', therapy = '{patient.therapy}' "
                                    f"where fullname = '{patient.fullname}'")
                     connection.commit()
+                    tkinter.messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
                 except Exception as e:
                     connection.rollback()
+                    tkinter.messagebox.showerror("خطأ!", "خطأ!\n" + str(e))
                     raise e
             # If we want to save a new patient
             else:
@@ -139,8 +73,10 @@ class Patients:
                          patient.age, patient.children, patient.prayer, patient.health, patient.work, patient.companion,
                          patient.city, patient.phone, patient.description, patient.diagnosis, patient.therapy))
                     connection.commit()
+                    tkinter.messagebox.showinfo("! تم الحفظ", "! تم الحفظ")
                 except Exception as e:
                     connection.rollback()
+                    tkinter.messagebox.showerror("خطأ!", "خطأ!\n" + str(e))
                     raise e
 
         # todo - csv file version
@@ -165,9 +101,6 @@ class Patients:
     def search_patient(self, option: str = NAME_SEARCH, name: str = None, id_number: str = None):
         to_return = []
         try:
-            # with pymssql.connect(r"MOHAMMADGH-PC\SQLEXPRESS", "m7md", "12345", "Patients") as connection:
-            # with pyodbc.connect(driver="{SQL Server Native Client 11.0}", host="MOHAMMADGH-PC", database="Patients",
-            #                     user="m7md", password="12345") as connection:
             with sqlite3.connect("Patient.db") as connection:
                 cursor = connection.cursor()
 
@@ -175,29 +108,39 @@ class Patients:
                               ' prayer, health, work, companion, city, phone, description, diagnosis, therapy'
 
                 try:
-                    if option == ID_SEARCH:
-                        cursor.execute(f"select {wanted_cols} from Patient where cast(id_number as varchar(9)) = '{id_number}'")
+                    # taking all the patients
+                    if (name is None or name.strip() == "") and (id_number is None or id_number.strip() == ""):
+                        cursor.execute(f"select {wanted_cols} from Patient")
+                        data = cursor.fetchall()
+                        # print(data)
+                        connection.commit()
+                        for j in range(len(data)):
+                            row = {ALL_DATA[i]: data[j][i] for i in range(len(ALL_DATA))}
+                            to_return.append(row)
                     else:
-                        if option == ALL_NAME:
-                            cursor.execute(f"select {wanted_cols} from Patient where fullname = '{name}'")
-                        elif option == FLNAME:
-                            cur = name.split(" ")
-                            cursor.execute(
-                                f"select {wanted_cols} from Patient where firstname = '{cur[0]}' and lastname = '{cur[1]}'")
-                        elif option == FMNAME:
-                            cur = name.split(" ")
-                            fmname = "firstname + ' ' + middlename"
-                            cursor.execute(f"select {wanted_cols} from Patient where {fmname} = '{cur[0]} {cur[1]}'")
-                        elif option == FNAME:
-                            cursor.execute(f"select {wanted_cols} from Patient where firstname = '{name}'")
-                        elif option == LNAME:
-                            cursor.execute(f"select {wanted_cols} from Patient where lastname = '{name}'")
-                    data = cursor.fetchall()
-
-                    connection.commit()
-                    for j in range(len(data)):
-                        row = {ALL_DATA[i]: data[j][i] for i in range(len(ALL_DATA))}
-                        to_return.append(row)
+                        if option == ID_SEARCH:
+                            cursor.execute(f"select {wanted_cols} from Patient where cast(id_number as varchar(9)) = '{id_number}'")
+                        else:
+                            if option == ALL_NAME:
+                                cursor.execute(f"select {wanted_cols} from Patient where fullname = '{name}'")
+                            elif option == FLNAME:
+                                cur = name.split(" ")
+                                cursor.execute(
+                                    f"select {wanted_cols} from Patient where firstname = '{cur[0]}' and lastname = '{cur[1]}'")
+                            elif option == FMNAME:
+                                cur = name.split(" ")
+                                fmname = "firstname + ' ' + middlename"
+                                cursor.execute(f"select {wanted_cols} from Patient where {fmname} = '{cur[0]} {cur[1]}'")
+                            elif option == FNAME:
+                                cursor.execute(f"select {wanted_cols} from Patient where firstname = '{name}'")
+                            elif option == LNAME:
+                                cursor.execute(f"select {wanted_cols} from Patient where lastname = '{name}'")
+                        data = cursor.fetchall()
+                        # print(data)
+                        connection.commit()
+                        for j in range(len(data)):
+                            row = {ALL_DATA[i]: data[j][i] for i in range(len(ALL_DATA))}
+                            to_return.append(row)
                 except Exception as e:
                     connection.rollback()
                     raise e
@@ -210,8 +153,8 @@ class Patients:
 
             return to_return
         except Exception as e:
+            tkinter.messagebox.showerror("خطأ!", "خطأ!\n" + str(e))
             raise e
-            # tkinter.messagebox.showerror("Error", str(e))
 
         # todo - csv file version
         # with open(os.path.join(this_dir, csv_file), 'r', encoding="utf-8-sig", newline='\n') as f:

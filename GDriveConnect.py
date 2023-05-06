@@ -1,3 +1,9 @@
+# import sys
+# import subprocess
+#
+# # implement pip as a subprocess:
+# subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pydrive'])
+#
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
 import tkinter.messagebox
@@ -5,42 +11,36 @@ from convert_db_to import do_backup_xlsx
 
 # For using listdir()
 import os
+import csv
+import pandas as pd
+import sqlite3
+gauth = None
+root_folder = None
+drive = None
 
-# Below code does the authentication
-# part of the code
-gauth = GoogleAuth()
+def authentication_func():
+    # Below code does the authentication
+    # part of the code
+    global gauth, root_folder, drive
+    gauth = GoogleAuth()
 
-# Creates local webserver and auto
-# handles authentication.
-gauth.LocalWebserverAuth()
-drive = GoogleDrive(gauth)
+    # Creates local webserver and auto
+    # handles authentication.
+    gauth.LocalWebserverAuth()
+    drive = GoogleDrive(gauth)
 
-# searching for the root folder to save to
-file_name = "المعالجة بالرقية الشرعية"
-query = f"title = '{file_name}'"
-root_list_check = drive.ListFile({'q': query}).GetList()
+    # searching for the root folder to save to
+    file_name = "المعالجة بالرقية الشرعية"
+    query = f"title = '{file_name}'"
+    root_list_check = drive.ListFile({'q': query}).GetList()
 
-# Check if the file exists
-if root_list_check:
-    root_folder = root_list_check[0]
-else:
-    body = {'title': "المعالجة بالرقية الشرعية", 'mimeType': "application/vnd.google-apps.folder"}
-    root_folder = drive.CreateFile(body)
-    root_folder.Upload()
-
-# found = False
-# print(len(drive.ListFile().GetList()))
-# for file1 in drive.ListFile().GetList():
-#     if file1['title'] == "المعالجة بالرقية الشرعية":
-#         root_folder = file1
-#         found = True
-#         break
-#
-# # if it is not existing then make one!
-# if not found:
-#     body = {'title': "المعالجة بالرقية الشرعية", 'mimeType': "application/vnd.google-apps.folder"}
-#     root_folder = drive.CreateFile(body)
-#     root_folder.Upload()
+    # Check if the file exists
+    if root_list_check:
+        root_folder = root_list_check[0]
+    else:
+        body = {'title': "المعالجة بالرقية الشرعية", 'mimeType': "application/vnd.google-apps.folder"}
+        root_folder = drive.CreateFile(body)
+        root_folder.Upload()
 
 # replace the value of this variable
 # with the absolute path of the directory
@@ -50,6 +50,9 @@ xlsx_path = r"BackUp.xlsx"
 def save_func():
     do_backup_xlsx()
     try:
+        if gauth is None:
+            authentication_func()
+
         root_list = drive.ListFile({'q': f"'{root_folder['id']}' in parents and trashed=false"}).GetList()
         for file in root_list:
             if file['title'] == xlsx_path:
@@ -76,14 +79,58 @@ def save_func():
         tkinter.messagebox.showerror("فشل", "فشل الحفظ إلى جوجل درايف!")
 
 
+# def _csv_to_db():
+#     with open('csvfile.csv', 'r') as csvfile:
+#         # create the object of csv.reader()
+#         csv_file_reader = csv.reader(csvfile, delimiter=',')
+#         # skip the header
+#         next(csv_file_reader, None)
+#
+#         # 2. create database
+#         with sqlite3.connect("Patient.db") as connection:
+#             cursor = connection.cursor()
+#
+#             for row in csv_file_reader:
+#                 # skip the first row
+#
+#                 row_str = ""
+#                 fullname, (firstname, middlename, lastname) = row[0], row[0].split(" ")
+#                 id_number, gender, social, age, children = row[1], row[2], row[3], row[4], row[5]
+#                 prayer, health, work, companion, city = row[6], row[7], row[8], row[9], row[10]
+#                 phone, description, diagnosis, therapy = row[11], row[12], row[13], row[14]
+#
+#                 # 5. create insert query
+#                 insert_query = f"INSERT INTO Patient VALUES ('{fullname}','{firstname}','{middlename}','{lastname}'," \
+#                               f"'{id_number}','{gender}','{social}','{age}','{children}','{prayer}','{health}'," \
+#                               f"'{work}','{companion}','{city}','{description}','{diagnosis}','{therapy}')"
+#                 # 6. Execute query
+#                 cursor.execute(insert_query)
+#             # # 7. commit changes
+#             connection.commit()
+#             # # 8. close connection
+#             # connection.close()
+
 def load_func():
     try:
+        if gauth is None:
+            authentication_func()
+
         root_list = drive.ListFile({'q': f"'{root_folder['id']}' in parents and trashed=false"}).GetList()
         for file in root_list:
             file.GetContentFile(fr"BackUp\{file['title']}")
+
+        # with sqlite3.connect("Patient.db") as connection:
+        #     cursor = connection.cursor()
+        #     cursor.execute('DELETE FROM Patient')
+        #     connection.commit()
+
+            # wb = pd.read_excel('BackUp.xlsx', sheet_name='Sheet')
+            # wb.to_sql(name='Patient', con=connection, if_exists='replace', index=True)
+            # connection.commit()
+
         tkinter.messagebox.showinfo("نجاح", "تم إستعادة الملفات بنجاح!")
     except Exception as e:
-        tkinter.messagebox.showerror("فشل", "فشلت الإستعادة!")
+        tkinter.messagebox.showerror("فشل", "فشلت الإستعادة!" + " " + str(e))
 
 
 # from pydrive.drive import GoogleDrive
