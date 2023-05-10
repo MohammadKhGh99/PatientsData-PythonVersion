@@ -5,7 +5,7 @@ from Constants import *
 import tkinter.ttk as ttk
 from tkinter import messagebox
 import GDriveConnect
-from convert_db_to import do_backup_xlsx
+import ConnectDB
 
 
 class GUI:
@@ -38,40 +38,6 @@ class GUI:
         self.search_content = []
         self.search_dict = dict()
 
-    # def rtlRelease(self, event):
-    #     global hebCursorPos
-    #     if event.keycode == 114 or event.keycode == 113:
-    #         hebCursorPos = event.widget.index(INSERT)
-    #         print("Hello")
-    #
-    #     else:
-    #         # print(hebCursorPos)
-    #         hebCursorPos = int(float(hebCursorPos))
-    #         event.widget.mark_set("insert", "1.0+%d chars" % hebCursorPos)
-    #         # event.widget.icursor(hebCursorPos)
-    #     print(str(event.keycode) + " " + str(hebCursorPos))
-    #
-    # def rtlPress(self, event):
-    #     global hebCursorPos
-    #     if event.keycode == 22:
-    #         length = len(event.widget.get())
-    #         if hebCursorPos == length:
-    #             event.widget.insert(hebCursorPos, " ")
-    #         index = hebCursor + 1 #len(event.widget.get(0)) + 1
-    #         event.widget.mark_set("insert", "1.0+%d chars" % index)
-    #         # event.widget.icursor(hebCursorPos + 1)
-    #     else:
-    #         if event.keycode == 119:
-    #             if hebCursorPos == 0:
-    #                 event.widget.insert(hebCursorPos, " ")
-    #             else:
-    #                 hebCursorPos -= 1
-    #             event.widget.icursor(hebCursorPos)
-    #
-    # def rtlMouse(self, event):
-    #     global hebCursorPos
-    #     hebCursorPos = event.widget.index(INSERT)
-
     def starting_the_window(self):
         """
         this method starts the window of the
@@ -85,6 +51,7 @@ class GUI:
         subject = Label(self.__root, text=SUBJECT, font=("Traditional Arabic", 20), bg="white")
         subject.place(x=self.__width // 2 - 10, y=63)
         self.starting_buttons()
+        self.__root.state("zoomed")
         self.__root.mainloop()
 
     def starting_buttons(self):
@@ -93,22 +60,36 @@ class GUI:
         :return: Nothing
         """
         self.__canvas.create_line(1263, 120, self.__width, 120)
-        self.__canvas.create_line(1263, 120, 1263, 600)
-        self.__canvas.create_line(1263, 600, self.__width, 600)
+        self.__canvas.create_line(1263, 120, 1263, 400)
+        self.__canvas.create_line(1263, 400, self.__width, 400)
 
         search_button = Button(self.__root, text="إبحث عن مريض", font=("Times", 20), command=self.__search_button_func)
-        search_button.place(x=self.__width, y=150, anchor="e")
+        search_button.place(x=self.__width, y=170, anchor="e")
         add_new_button = Button(self.__root, text="إضافة مريض جديد", font=("Times", 20),
                                 command=self.add_new_patient_button_func)
-        add_new_button.place(x=self.__width, y=250, anchor="e")
+        add_new_button.place(x=self.__width, y=270, anchor="e")
 
-        save_to_drive_button = Button(self.__root, text="حفظ لجوجل درايف", font=("Times", 20),
+        quit_button = Button(self.__root, text="الخروج", font=("Times", 15), command=self.quit_button_func,
+                             foreground="red")
+        quit_button.place(x=self.__width, y=350, anchor="e")
+
+        ####################################################################################################
+
+        self.__canvas.create_line(1263, 600, self.__width, 600)
+        self.__canvas.create_line(1263, 600, 1263, 780)
+        self.__canvas.create_line(1263, 780, self.__width, 780)
+
+        save_to_drive_button = Button(self.__root, text="حفظ لجوجل درايف", font=("Times", 15),
                                       command=GDriveConnect.save_func)
-        save_to_drive_button.place(x=self.__width, y=350, anchor="e")
+        save_to_drive_button.place(x=self.__width, y=635, anchor="e")
         #
-        load_from_drive_button = Button(self.__root, text="إستعادة من جوجل درايف", font=("Times", 20),
+        load_from_drive_button = Button(self.__root, text="إستعادة من جوجل درايف", font=("Times", 15),
                                         command=GDriveConnect.load_func)
-        load_from_drive_button.place(x=self.__width, y=450, anchor="e")
+        load_from_drive_button.place(x=self.__width, y=690, anchor="e")
+
+        to_xl_button = Button(self.__root, text="تحويل لملف اكسل", font=("Times", 15),
+                              command=lambda: GDriveConnect.do_backup_xlsx(True))
+        to_xl_button.place(x=self.__width, y=745, anchor="e")
 
         # remove_button = Button(self.__root, text="حذف مريض", font=("Times", 20),
         #                        command=self.delete_patient_button_func)
@@ -117,12 +98,6 @@ class GUI:
         # update_button = Button(self.__root, text="تعديل معلومات مريض", font=("Times", 20),
         #                        command=self.update_patient_button_func)
         # update_button.place(x=self.__width, y=450, anchor="e")
-        quit_button = Button(self.__root, text="الخروج", font=("Times", 20), command=self.quit_button_func)
-        quit_button.place(x=self.__width, y=550, anchor="e")
-
-        to_xl_button = Button(self.__root, text="تحويل لملف اكسل", font=("Times", 20),
-                              command=lambda: do_backup_xlsx(True))
-        to_xl_button.place(x=self.__width, y=700, anchor="e")
 
     def hide_canvas_content(self):
         """
@@ -165,6 +140,9 @@ class GUI:
         self.widgets_dict[GENDER][2].set(our_choice[GENDER[1:]])
         self.widgets_dict[SOCIAL][2].set(our_choice[SOCIAL[1:]])
         self.widgets_dict[AGE][1].insert(0, our_choice[AGE[1:]])
+        self.widgets_dict[SERIAL_YEAR][1].insert(0, our_choice[SERIAL_YEAR])
+        self.widgets_dict[SERIAL][1].insert(0, our_choice[SERIAL[1:]])
+
         self.widgets_dict[CHILDREN][1].insert(0, our_choice[CHILDREN[1:]])
         self.widgets_dict[PRAYER][2].set(our_choice[PRAYER[1:]])
         self.widgets_dict[HEALTH][1].insert(0, our_choice[HEALTH[1:]])
@@ -374,7 +352,8 @@ class GUI:
 
         serial_label = Label(self.__canvas, text=SERIAL, font=("Times", 20), bg="white")
         serial_label.place(x=SERIAL_YEAR_LBL_X, y=SERIAL_Y, anchor="w")
-        serial_year_entry = Entry(self.__canvas, textvariable=serial_year_value, width=2, font=("Times", 15), highlightthickness=5)
+        serial_year_entry = Entry(self.__canvas, textvariable=serial_year_value, width=2, font=("Times", 15),
+                                  highlightthickness=5, justify="right")
         serial_year_entry.place(x=SERIAL_YEAR_WDG_X, y=SERIAL_Y, anchor="e")
 
         return serial_label, serial_year_entry, serial_year_value
@@ -389,7 +368,7 @@ class GUI:
         slash_label = Label(self.__canvas, text="/", font=("Times", 20), bg="white")
         slash_label.place(x=SLASH_LBL_X, y=SERIAL_Y, anchor="w")
         serial_entry = Entry(self.__canvas, textvariable=serial_value, width=10, font=("Times", 15),
-                                  highlightthickness=5)
+                             highlightthickness=5, justify="right")
         serial_entry.place(x=SERIAL_WDG_X, y=SERIAL_Y, anchor="e")
         return slash_label, serial_entry, serial_value
 
@@ -537,8 +516,8 @@ class GUI:
         gender_label, gender_options, gender_value = self.create_gender()
         social_label, social_options, social_value = self.create_social()
         age_label, age_entry, age_value = self.create_age()
-        serial_label, serial_year_entry, serial_year_value = self.create_serial_year()
-        slash_label, serial_entry, serial_value = self.create_serial()
+        serial_year_label, serial_year_entry, serial_year_value = self.create_serial_year()
+        slash_label, serial_num_entry, serial_value = self.create_serial()
         children_label, children_entry, children_value = self.create_children()
         prayer_label, prayer_options, prayer_value = self.create_prayer()
         health_label, health_entry, health_value = self.create_health()
@@ -561,6 +540,9 @@ class GUI:
             social = social_value.get()
             # check
             age = age_value.get()
+
+            serial_year = serial_year_entry.get()
+            serial_num = serial_num_entry.get()
             # check
             children = children_value.get()
             prayer = prayer_value.get()
@@ -573,9 +555,10 @@ class GUI:
             description = description_text.get(1.0, "end-1c")
             diagnosis = diagnosis_text.get(1.0, "end-1c")
             therapy = therapy_text.get(1.0, "end-1c")
-            if name == "" and id_number == "" and gender == "" and social == "" and age == "" and children == "" \
-                    and prayer == "" and health == "" and work == "" and companion == "" and city == "" \
-                    and phone == "" and description == "" and diagnosis == "" and therapy == "":
+            if name == "" and id_number == "" and gender == "" and social == "" and age == "" and serial_year == "" \
+                    and serial_num == ""and children == "" and prayer == "" and health == "" and work == "" \
+                    and companion == "" and city == "" and phone == "" and description == "" and diagnosis == "" \
+                    and therapy == "":
                 messagebox.showwarning("!فارغ", "!لا يوجد معلومات للحفظ")
                 return
             nonlocal id_flag, age_flag, id_err_label, age_err_label, child_err_label, phone_err_label, child_flag, phone_flag
@@ -632,7 +615,7 @@ class GUI:
                 phone_err_label.destroy()
 
             if not phone_flag and not id_flag and not child_flag and not age_flag:
-                patient = p.Patient(name, id_number, gender, social, age, children, prayer, health, work, companion,
+                patient = p.Patient(serial_year, serial_num, name, id_number, gender, social, age, children, prayer, health, work, companion,
                                     city, phone, description, diagnosis, therapy)
 
                 self.__patients.add_patient(patient, GUI.after_search)
@@ -661,17 +644,17 @@ class GUI:
             GUI.first_time = False
             self.__canvas_content += [name_label, name_entry, pid_label, pid_entry, gender_label, gender_options,
                                       gender_value, social_label, social_options, social_value, age_label, age_entry,
-                                      serial_label, serial_year_entry, slash_label, serial_entry, children_label,
-                                      children_entry, prayer_label, prayer_options, prayer_value, health_label,
-                                      health_entry, work_label, work_entry, companion_label, companion_entry,
-                                      city_label, city_entry, phone_label, phone_entry, description_label,
-                                      description_text, diagnosis_label, diagnosis_text, therapy_label, therapy_text,
-                                      save_button, ignore_button, id_err_label, age_err_label, phone_err_label,
-                                      child_err_label, age_err_label, id_err_label]
+                                      serial_year_label, serial_year_entry, slash_label, serial_num_entry,
+                                      children_label, children_entry, prayer_label, prayer_options, prayer_value,
+                                      health_label, health_entry, work_label, work_entry, companion_label,
+                                      companion_entry, city_label, city_entry, phone_label, phone_entry,
+                                      description_label, description_text, diagnosis_label, diagnosis_text,
+                                      therapy_label, therapy_text, save_button, ignore_button, age_err_label,
+                                      phone_err_label, child_err_label, id_err_label]
 
-            self.fill_dict(*self.__canvas_content[:-6])
+            self.fill_dict(*self.__canvas_content[:-4])
 
-            self.widgets += [name_entry, pid_entry, age_entry, serial_year_entry, serial_entry, children_entry,
+            self.widgets += [name_entry, pid_entry, age_entry, serial_year_entry, serial_num_entry, children_entry,
                              health_entry, work_entry, companion_entry, city_entry, phone_entry, description_text,
                              diagnosis_text, therapy_text]
 
@@ -691,8 +674,8 @@ class GUI:
             self.unhide_widgets()
 
     def fill_dict(self, name_label, name_entry, pid_label, pid_entry, gender_label, gender_options, gender_value,
-                  social_label, social_options, social_value, age_label, age_entry, serial_label, serial_year_entry,
-                  slash_label, serial_entry,
+                  social_label, social_options, social_value, age_label, age_entry, serial_year_label, serial_year_entry,
+                  slash_label, serial_num_entry,
                   children_label, children_entry, prayer_label, prayer_options, prayer_value, health_label,
                   health_entry, work_label, work_entry, companion_label, companion_entry, city_label, city_entry,
                   phone_label, phone_entry, description_label, description_text, diagnosis_label, diagnosis_text,
@@ -702,8 +685,8 @@ class GUI:
         self.widgets_dict[GENDER] = (gender_label, gender_options, gender_value)
         self.widgets_dict[SOCIAL] = (social_label, social_options, social_value)
         self.widgets_dict[AGE] = (age_label, age_entry)
-        self.widgets_dict[SERIAL] = (serial_label, serial_year_entry)
-        self.widgets_dict["serial no"] = (slash_label, serial_entry)
+        self.widgets_dict[SERIAL_YEAR] = (serial_year_label, serial_year_entry)
+        self.widgets_dict[SERIAL] = (slash_label, serial_num_entry)
         self.widgets_dict[CHILDREN] = (children_label, children_entry)
         self.widgets_dict[PRAYER] = (prayer_label, prayer_options, prayer_value)
         self.widgets_dict[HEALTH] = (health_label, health_entry)
@@ -727,8 +710,8 @@ class GUI:
         self.widgets_dict[GENDER][0].place(x=GENDER_LBL_X, y=GENDER_Y, anchor="w")
         self.widgets_dict[SOCIAL][0].place(x=SOCIAL_LBL_X, y=SOCIAL_Y, anchor="w")
         self.widgets_dict[AGE][0].place(x=AGE_LBL_X, y=AGE_Y, anchor="w")
-        self.widgets_dict[SERIAL][0].place(x=SERIAL_YEAR_LBL_X, y=SERIAL_Y, anchor="w")
-        self.widgets_dict["serial no"][0].place(x=SLASH_LBL_X, y=SERIAL_Y, anchor="w")
+        self.widgets_dict[SERIAL_YEAR][0].place(x=SERIAL_YEAR_LBL_X, y=SERIAL_Y, anchor="w")
+        self.widgets_dict[SERIAL][0].place(x=SLASH_LBL_X, y=SERIAL_Y, anchor="w")
 
         self.widgets_dict[CHILDREN][0].place(x=CHILDREN_LBL_X, y=CHILDREN_Y, anchor="w")
         self.widgets_dict[PRAYER][0].place(x=PRAYER_LBL_X, y=PRAYER_Y, anchor="w")
@@ -748,8 +731,8 @@ class GUI:
         self.widgets_dict[GENDER][1].place(x=GENDER_WDG_X, y=GENDER_Y, anchor="e")
         self.widgets_dict[SOCIAL][1].place(x=SOCIAL_WDG_X, y=SOCIAL_Y, anchor="e")
         self.widgets_dict[AGE][1].place(x=AGE_WDG_X, y=AGE_Y, anchor="e")
-        self.widgets_dict[SERIAL][1].place(x=SERIAL_YEAR_WDG_X - 35, y=SERIAL_Y, anchor="w")
-        self.widgets_dict["serial no"][1].place(x=SERIAL_WDG_X - 115, y=SERIAL_Y, anchor="w")
+        self.widgets_dict[SERIAL_YEAR][1].place(x=SERIAL_YEAR_WDG_X - 35, y=SERIAL_Y, anchor="w")
+        self.widgets_dict[SERIAL][1].place(x=SERIAL_WDG_X - 115, y=SERIAL_Y, anchor="w")
 
         self.widgets_dict[CHILDREN][1].place(x=CHILDREN_WDG_X, y=CHILDREN_Y, anchor="e")
         self.widgets_dict[PRAYER][1].place(x=PRAYER_WDG_X, y=PRAYER_Y, anchor="e")
@@ -782,5 +765,6 @@ class GUI:
 
 
 if __name__ == "__main__":
+    ConnectDB.create_table()
     gui = GUI()
     gui.starting_the_window()
