@@ -1,9 +1,15 @@
-Made by Mohammad Ghanayem, m7md.gh.99@hotmail.com
-The idea came from my dad who's working as private Quran therapist, so I decided to make this software to help him and
-for other Quran therapists, whom don't want to share patients' data for any other "third party".
+![alt text](https://github.com/MohammadKhGh99/PatientsData-PythonVersion/blob/master/main-menu.png?raw=true)
+
+Made by Mohammad Ghanayem, mohammad.gh454@gmail.com
+The idea came from my dad who is working as private therapist, so I decided to make this software to help him in saving his patients data safely.
 This Project is made for private doctors, therapists...
-In this project I will make a GUI for saving patients data for future use, name, id, why he came, why he didn't came,
-illnesses....
-this project for private therapists and doctors to use for less price than the official software that almost all the
-doctors and hospitals use, again it is made for private work, you cannot share patients data to another hospital or
-doctors or therapist, until now...
+In this project I will make a GUI to help user to understand what he can do with this software.
+you can save fullname, id number, phone number...
+I used sqlite3 for handling the data, inserting, updating and searching.
+* You can make an xlsx file from the data you have of all the patients.
+* You can save your work to google drive, if you click the "save to google drive" button (in Arabic😅) a browser will open to enter your google account,
+  then a copy of the xlsx file and the main database will be exported to google drive in a folder.
+* You can restore your work from google drive.
+
+***NOTE***
+the software GUI written in Arabic, until now!
