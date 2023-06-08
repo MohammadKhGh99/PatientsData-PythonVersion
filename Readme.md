@@ -13,17 +13,18 @@ I used sqlite3 for handling the data, inserting, updating and searching.
                                                                  
                                                                  
                                                                  Main Menu Page
-<img src="https://github.com/MohammadKhGh99/PatientsData-PythonVersion/assets/81380413/eb05ed9a-ea2f-4739-8057-442264808d90" width="1000"/>
+<img src="https://github.com/MohammadKhGh99/PatientsData-PythonVersion/assets/81380413/e3d823d5-cc3b-4e44-adcd-79ab01c3c959" width="1000"/>
 
 <pre>
                       Adding Page                                                              Searching Page
 </pre>
 
 
-<img src="https://github.com/MohammadKhGh99/PatientsData-PythonVersion/assets/81380413/64a96f9d-1ed3-4c5c-864b-d222f1075a84" width="500"/>
-<img src="https://github.com/MohammadKhGh99/PatientsData-PythonVersion/assets/81380413/3c8a15ef-7b27-4871-b9f9-582d175ecca4" width="500"/>
+<img src="https://github.com/MohammadKhGh99/PatientsData-PythonVersion/assets/81380413/52550288-5203-470d-b3e9-5190d9d7b18b" width="500"/>
+<img src="https://github.com/MohammadKhGh99/PatientsData-PythonVersion/assets/81380413/19bbc43b-2b68-43ad-b78a-de7eaf1ccfa1" width="500"/>
 
 <br>
 <br>
 ***NOTE***
+<br>
 the software GUI written in Arabic, until now!
