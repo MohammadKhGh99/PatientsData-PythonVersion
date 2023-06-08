@@ -35,7 +35,7 @@ class Patient:
 
 # todo - csv file version
 folder_name = "علاج"
-csv_file = "patients.csv"
+# csv_file = "patients.csv"
 this_dir = os.path.join(os.path.abspath(os.curdir), folder_name)
 
 
